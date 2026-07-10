@@ -38,6 +38,23 @@ df_origins <- tibble::tibble(
   model = df_vehicles$model,
   origin = rep(c("USA", "Japan", "Europe"), length.out = nrow(df_vehicles))
 )
+
+# colors mirror custom.scss so ggplot output sits flush on the slide background
+theme_bttf <- ggplot2::theme(
+  text = ggplot2::element_text(color = "#e8eaf2", size = 16),
+  plot.title = ggplot2::element_text(color = "#e8eaf2", face = "bold", size = 18),
+  plot.subtitle = ggplot2::element_text(color = "#8a90ad", size = 13),
+  axis.text = ggplot2::element_text(color = "#8a90ad", size = 12),
+  axis.title = ggplot2::element_text(color = "#8a90ad", size = 13),
+  legend.title = ggplot2::element_text(color = "#e8eaf2"),
+  legend.text = ggplot2::element_text(color = "#c0c5ce"),
+  panel.grid.major = ggplot2::element_line(color = "#262b47"),
+  panel.grid.minor = ggplot2::element_blank(),
+  plot.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
+  panel.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
+  legend.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
+  legend.key = ggplot2::element_rect(fill = "#0d0f1e", color = NA)
+)
 ```
 
 ## {.center background-color="#0d0f1e"}
@@ -440,7 +457,7 @@ attach_ducklake("q3_submission", lake_path = "data/lake",
 ```{r}
 #| echo: false
 #| fig-height: 4.2
-plot_snapshots()
+plot_snapshots() + theme_bttf
 ```
 :::
 ::: {.column width="45%"}
