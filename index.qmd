@@ -60,7 +60,7 @@ theme_bttf <- ggplot2::theme(
 ## {.center background-color="#0d0f1e"}
 
 ::: {style="text-align: center;"}
-<img src="images/svg/duck-delorean.svg" style="width: 320px; margin-bottom: -0.5em;" alt="duck with 80s sunglasses and fire trails"/>
+<img src="images/svg/duck-delorean.svg" style="width: 460px; margin-bottom: -0.5em;" alt="rubber duck in sunglasses driving a DeLorean with fire trails"/>
 
 [Quack to the Future]{.bttf-wordmark}
 
