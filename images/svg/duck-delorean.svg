@@ -59,7 +59,7 @@
   <!-- black lower trim -->
   <path d="M 158 191 L 560 196 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 158 202 Z" fill="#1a1d33"/>
   <!-- beltline crease -->
-  <path d="M 160 167 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
+  <path d="M 160 167 L 186 168 M 254 172 L 438 182 M 508 185 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
   <!-- hood panel line -->
   <path d="M 444 163 L 544 174" stroke="#79819a" stroke-width="1.5" opacity="0.6" fill="none"/>
   <!-- rear louvers -->
