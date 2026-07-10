@@ -1,0 +1,697 @@
+---
+format:
+  revealjs:
+    theme: custom.scss
+    width: 1280
+    height: 720
+    margin: 0.08
+    transition: fade
+    transition-speed: fast
+    highlight-style: dracula
+    slide-number: c/t
+    hash: true
+    menu: false
+    code-line-numbers: false
+    fig-align: center
+    include-after-body: fitview.html
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| include: false
+library(ducklake)
+library(dplyr)
+library(dplyneage)
+
+# fresh lake every render so snapshot numbers on slides stay true
+unlink("data/lake", recursive = TRUE)
+dir.create("data/lake", recursive = TRUE, showWarnings = FALSE)
+
+df_vehicles <- mtcars |>
+  tibble::rownames_to_column("model") |>
+  tibble::as_tibble()
+
+df_origins <- tibble::tibble(
+  model = df_vehicles$model,
+  origin = rep(c("USA", "Japan", "Europe"), length.out = nrow(df_vehicles))
+)
+```
+
+## {.center background-color="#0d0f1e"}
+
+::: {style="text-align: center;"}
+<img src="images/svg/duck-delorean.svg" style="width: 320px; margin-bottom: -0.5em;" alt="duck with 80s sunglasses and fire trails"/>
+
+[Quack to the Future]{.bttf-wordmark}
+
+<div class="fire-trails"></div>
+
+[Building traceable data lakehouses with DuckLake in R]{style="font-size: .75em; color: #c0c5ce;"}
+
+<br/>
+
+<div class="time-circuits" style="font-size: .55em;">
+<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">POSIT::CONF 2026 · HOUSTON TX</span></div>
+<div class="tc-row tc-pres"><span class="tc-label">Presenter</span><span class="tc-value">TRAVIS GERKE · PCCTC</span></div>
+<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FINAL_v2_FINAL.CSV · 1985</span></div>
+</div>
+:::
+
+::: notes
+Don't rush this one. "Hi, I'm Travis. I lead data science at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel." Beat. "For your data."
+:::
+
+# The problem {.divider visibility="hidden"}
+
+## Last month, you shipped a report {.center}
+
+::: {.statement}
+This month, someone asks:
+
+["Hey — this number **changed** since the last version.<br/> What happened?"]{.fragment}
+:::
+
+<br/>
+
+::: {.fragment .quiet style="text-align: center;"}
+And you have absolutely no idea.
+:::
+
+::: notes
+The Articulation opening: a problem everyone in the room has lived. Let the question hang. Almost every hand goes up if you ask who's been here.
+:::
+
+## You go looking for answers {.center}
+
+::: columns
+::: {.column width="55%"}
+<div class="terminal">
+<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/projects/q3-report/data</div>
+<div class="term-body">
+analysis_data.csv<br/>
+analysis_data_v2.csv<br/>
+analysis_data_v2_<span class="hl">FINAL</span>.csv<br/>
+analysis_data_v2_FINAL_<span class="hl">fixed</span>.csv<br/>
+analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
+<span class="dim">analysis_data_old_DO_NOT_USE.csv</span><br/>
+<span class="dim">temp.csv</span>
+</div>
+</div>
+:::
+
+::: {.column width="45%"}
+<div class="chat-meta">Slack, 4:47 PM</div>
+<div class="chat them">which one is current?</div>
+<div class="chat me">USE_THIS_ONE, I think</div>
+<div class="chat them">you *think*?</div>
+<div class="chat me fragment">…do you remember why row 1,204 changed in March?</div>
+:::
+:::
+
+::: notes
+Get the laugh, then twist the knife: filenames are our version control, Slack is our audit log, and memory is our lineage system.
+:::
+
+## Unversioned data fades {.center}
+
+::: columns
+::: {.column style="width: 55%; text-align: center;"}
+<div class="polaroid">
+<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 480px;" alt="Marty's fading family photograph"/>
+</div>
+:::
+
+::: {.column width="45%"}
+Every overwrite quietly **erases history**:
+
+- what the data looked like before
+- who changed it
+- *why* they changed it
+
+::: {.fragment}
+Your past analyses are fading from the photo.
+:::
+:::
+:::
+
+::: notes
+The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing — the present looks fine, and the past is just gone.
+:::
+
+## {.center}
+
+::: {.statement}
+Data pipelines need a **paper trail**:
+
+what changed, *who* changed it, *why* —
+
+and where every column **came from**.
+:::
+
+<br/>
+
+::: {.quiet style="text-align: center;"}
+That's the whole talk. Everything else is how to get it without leaving R.
+:::
+
+::: notes
+The governing idea — the "stem." Say it slowly. Everything in the next 18 minutes hangs off this sentence.
+:::
+
+# What the big-data world does {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+## The lakehouse, in one slide
+
+::: incremental
+- Your tables live as **Parquet files** (cheap, open, columnar)
+- A **catalog** tracks which files make up each table, at each version
+- Writes are **transactions**: atomic, versioned, never in a half-state
+- This is what Iceberg and Delta Lake do for the Spark world
+:::
+
+::: {.fragment style="text-align: center; margin-top: .6em;"}
+::: columns
+::: {.column width="55%"}
+![](images/stills/great-scott.webp){width="420"}
+:::
+::: {.column style="width: 45%; text-align: left;"}
+The catch: that world assumes a JVM, a cluster, and a platform team.
+
+**You don't need 1.21 gigawatts for this.**
+:::
+:::
+:::
+
+::: notes
+Audience calibration slide — most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem.
+:::
+
+## You already have the engine
+
+**DuckDB**: a full analytical database that lives *inside your R session*.
+
+- `install.packages("duckdb")` — no server, no cluster, no IT ticket
+- Queries Parquet/CSV directly, scales past memory
+- dbplyr speaks fluent DuckDB: your dplyr code *is* the SQL
+
+::: {.fragment style="text-align: center;"}
+[It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it.]{.orange}
+:::
+
+::: notes
+One-slide DuckDB primer for those who haven't touched it. The point to leave in their heads: it's already in R, and dplyr already drives it.
+:::
+
+## DuckLake: the lakehouse, minus the ceremony
+
+::: columns
+::: {.column width="50%"}
+A DuckDB extension where the **entire lakehouse** is:
+
+1. Parquet files in a folder (or S3)
+2. A plain SQL database as the catalog — DuckDB, SQLite, or Postgres
+
+That's it. No JVM, no manifest files, no Zookeeper sacrifice.
+:::
+
+::: {.column width="50%"}
+<div class="terminal" style="font-size: .6em;">
+<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> your entire lakehouse</div>
+<div class="term-body">
+data/lake/<br/>
+├── quack_lake.ducklake &nbsp;<span class="dim"># catalog</span><br/>
+└── main/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;├── vehicles_raw/&ast;.parquet<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;├── vehicles_clean/&ast;.parquet<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;└── efficiency_by_origin/&ast;.parquet
+</div>
+</div>
+:::
+:::
+
+::: notes
+The "aha" for skeptics: you can `ls` your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own.
+:::
+
+## The other half of the paper trail
+
+SQL teams already get **column-level lineage** from tools like dbt and SQLMesh:
+
+> "`gold.avg_mpg` is computed from `vehicles_raw.mpg`, through these two models."
+
+<br/>
+
+::: {.fragment}
+For **dplyr pipelines**? Nothing. The lineage lives in your head,
+
+and your head does not survive job changes.
+:::
+
+::: notes
+Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
+:::
+
+# Part I: the time machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+<div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
+<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
+<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
+<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
+</div>
+
+::: notes
+Act break. "{ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out."
+:::
+
+## Three lines to a lakehouse
+
+```{r}
+#| output: false
+library(ducklake)
+
+install_ducklake()   # once: grabs the DuckDB extension
+attach_ducklake("quack_lake", lake_path = "data/lake")
+```
+
+<br/>
+
+That's a working, transactional, versioned data lake.
+
+In a folder. On a Tuesday. No platform team was harmed.
+
+::: notes
+This executes for real at render. Emphasize the on-ramp: if they remember one code slide, it's this one.
+:::
+
+## The plan: a medallion pipeline
+
+![](images/svg/medallion.svg){width="900" fig-align="center"}
+
+::: {.quiet style="text-align: center;"}
+Fancy name, honest idea: keep raw data sacred, refine in stages, analyze from gold.
+:::
+
+::: notes
+Medallion in 20 seconds — it's just staged refinement with rules. The demo follows these three hops.
+:::
+
+## Bronze: every write is a commit
+
+```{r}
+#| output: false
+with_transaction({
+  create_table(df_vehicles, "vehicles_raw")
+  create_table(df_origins,  "origins_raw")
+},
+  author         = "marty",
+  commit_message = "Load raw vehicle + origin data"
+)
+```
+
+<br/>
+
+::: incremental
+- The write is **atomic** — both tables or neither
+- It's recorded with an **author** and a **commit message**
+- Sound familiar? It's a `git commit` for your data.
+:::
+
+::: notes
+The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached.
+:::
+
+## Silver and gold: it's just dplyr
+
+```{r}
+#| output: false
+#| code-line-numbers: "2-5|8-12"
+with_transaction(
+  get_ducklake_table("vehicles_raw") |>
+    mutate(cyl = as.integer(cyl), heavy = wt > 3.5) |>
+    select(model, mpg, cyl, wt, heavy) |>
+    create_table("vehicles_clean"),
+  author = "doc", commit_message = "Clean + standardize vehicles")
+
+with_transaction(
+  get_ducklake_table("vehicles_clean") |>
+    left_join(get_ducklake_table("origins_raw"), by = "model") |>
+    group_by(origin) |>
+    summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n()) |>
+    create_table("efficiency_by_origin"),
+  author = "doc", commit_message = "Gold: efficiency by origin")
+```
+
+`get_ducklake_table()` returns a **lazy dbplyr table** — DuckDB does the work, nothing is collected until you ask.
+
+::: notes
+No new verbs to learn: mutate, join, summarise. The only additions are the bookends — get table, create table, wrapped in a documented transaction.
+:::
+
+## Your data has a git log now
+
+```{r}
+list_table_snapshots() |>
+  select(snapshot_id, author, commit_message)
+```
+
+<br/>
+
+::: {.fragment .statement style="font-size: 1em;"}
+Six months from now, *"why did this change?"* has an **answer you can query**.
+:::
+
+::: notes
+Pause and let them read — this output is real, generated when the deck rendered. This is the audit trail slide.
+:::
+
+## Time travel {.center}
+
+```{r}
+#| output-location: fragment
+get_ducklake_table_version("vehicles_clean", version = 2) |>
+  head(3) |>
+  collect()
+```
+
+<div class="time-circuits" style="font-size: .5em; margin-top: .8em;">
+<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">SNAPSHOT 02 · vehicles_clean</span></div>
+<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">SNAPSHOT 03</span></div>
+<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">AUTHOR: doc</span></div>
+</div>
+
+::: notes
+Query any table exactly as it existed at any snapshot — or any timestamp, with `get_ducklake_table_asof()`. No backup archaeology, no restore drills.
+:::
+
+## Then Biff gets write access
+
+```{r}
+#| output: false
+with_transaction(
+  get_ducklake_table("vehicles_clean") |>
+    filter(mpg > 25) |>            # "cleanup"
+    replace_table("vehicles_clean"),
+  author = "biff", commit_message = "small tweak")
+```
+
+```{r}
+get_ducklake_table("vehicles_clean") |> tally() |> collect()
+```
+
+::: {.fragment}
+32 rows → 6 rows, on a Friday afternoon, labeled **"small tweak."**
+:::
+
+::: notes
+Every team has a Biff. Sometimes Biff is you, at 4:47 PM. The point isn't preventing the mistake — it's that the mistake is now visible, attributed, and reversible.
+:::
+
+## Fixing the timeline
+
+```{r}
+restore_table_version("vehicles_clean", version = 2)
+get_ducklake_table("vehicles_clean") |> tally() |> collect()
+```
+
+::: {.fragment}
+Restore rolls **forward** as a *new* snapshot — Biff's mistake stays in the log.
+
+You fix the timeline **without erasing anyone from the photo**.
+:::
+
+::: notes
+Callback to the Polaroid. Contrast with the flat-file world, where the fix is overwriting the overwrite and praying. History is append-only; even the recovery is auditable.
+:::
+
+## Freeze a moment forever
+
+```{r}
+#| eval: false
+# a read-only lake, pinned to the snapshot you reported from
+attach_ducklake("q3_submission", lake_path = "data/lake",
+                snapshot_version = 3, read_only = TRUE)
+```
+
+::: columns
+::: {.column width="55%"}
+```{r}
+#| echo: false
+#| fig-height: 4.2
+plot_snapshots()
+```
+:::
+::: {.column width="45%"}
+![](images/stills/clock-tower.webp){width="380"}
+
+::: {.quiet}
+In my world — prostate cancer clinical trials — "trust me" is not an audit trail. *This* is what a regulator can read.
+:::
+:::
+:::
+
+::: notes
+The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04 — and you can prove it.
+:::
+
+# Part II: the flux capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+::: columns
+::: {.column width="45%"}
+![](images/svg/flux-capacitor-dag.svg){width="380"}
+:::
+::: {.column style="width: 55%; text-align: left;"}
+<br/><br/>
+The Y-shaped diagram in Doc's car?
+
+**It was a lineage DAG all along.**
+
+[{dplyneage}: column-level lineage for dplyr pipelines]{.cyan}
+:::
+:::
+
+::: notes
+Act break two. ducklake answers when/who/why per table; dplyneage answers the finer question — where did this *column* come from. It's what makes lineage possible.
+:::
+
+## What "column-level lineage" means
+
+For every column in your result, the exact trail back to its sources:
+
+<br/>
+
+```r
+gold.avg_mpg
+  └── mean(mpg, na.rm = TRUE)      # the transformation
+        └── vehicles_clean.mpg     # the source column
+              └── vehicles_raw.mpg # ...all the way down
+```
+
+<br/>
+
+Not "these tables are related" — **this cell traces to that column, via this expression.**
+
+::: notes
+Table-level lineage is common; column-level is the version that answers real questions during an audit or a debugging session.
+:::
+
+## One pipe away from a diagram
+
+```{r}
+#| output-location: slide
+library(dplyneage)
+
+get_ducklake_table("vehicles_clean") |>
+  left_join(get_ducklake_table("origins_raw"), by = "model") |>
+  group_by(origin) |>
+  summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n()) |>
+  extract_lineage() |>
+  lineage_flow(height = "560px")
+```
+
+::: notes
+The money demo. Take any dplyr pipeline you already have, pipe it into two more functions. Next slide is the live widget — drag a node, hover an edge to show the expression labels.
+:::
+
+## No plutonium required
+
+How does it know?
+
+::: incremental
+- Your dplyr pipeline is already a **lazy query tree** (thanks, dbplyr)
+- {dplyneage} walks that tree directly — **pure R**, exact attribution
+- Joins, aggregations, windows, unions: resolved to true source columns
+- Raw SQL strings? A sqlglot fallback handles those (Python optional)
+:::
+
+<br/>
+
+::: {.fragment .quiet style="text-align: center;"}
+No parsing your SQL with regex. No YAML confessional. No Python required.
+:::
+
+::: notes
+For the "what's the catch" people: dbplyr already built the query tree; dplyneage just finally reads it. That's why attribution is exact rather than best-effort string matching.
+:::
+
+## Before you change the past…
+
+```{r}
+lin <- get_ducklake_table("vehicles_clean") |>
+  left_join(get_ducklake_table("origins_raw"), by = "model") |>
+  group_by(origin) |>
+  summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n()) |>
+  extract_lineage()
+
+lineage_downstream(lin, "vehicles_clean.mpg")   # what would I break?
+lineage_upstream(lin, "output.avg_mpg")         # where did this come from?
+```
+
+::: columns
+::: {.column width="60%"}
+::: {.fragment}
+Impact analysis as a function call: know what a change touches **before** you make it.
+:::
+:::
+::: {.column width="40%"}
+![](images/stills/almanac.webp){width="340"}
+:::
+:::
+
+::: notes
+The almanac lesson: changing upstream data without knowing the downstream consequences is how you get the bad 1985. Renaming a column? Ask lineage_downstream first.
+:::
+
+## Lineage across the whole lake
+
+```{r}
+#| output-location: slide
+silver <- get_ducklake_table("vehicles_raw") |>
+  mutate(cyl = as.integer(cyl), heavy = wt > 3.5) |>
+  select(model, mpg, cyl, wt, heavy)
+
+gold <- get_ducklake_table("vehicles_clean") |>
+  left_join(get_ducklake_table("origins_raw"), by = "model") |>
+  group_by(origin) |>
+  summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n())
+
+extract_lineage(list(vehicles_clean = silver, efficiency_by_origin = gold)) |>
+  lineage_flow(height = "560px")
+```
+
+::: notes
+Name your models in a list and the layers stitch: bronze through gold in one DAG. This is the dbt docs page experience, generated from the dplyr you already wrote.
+:::
+
+## And it travels beyond R
+
+```{r}
+#| eval: false
+lineage_mermaid(lin)       # Mermaid text: renders on GitHub, in Quarto docs
+lineage_openlineage(lin)   # OpenLineage JSON: DataHub, Marquez, OpenMetadata
+lineage_diff(old, new)     # CI check: "this PR rewires gold.avg_mpg"
+```
+
+<br/>
+
+Lineage as **data**, not just a picture:
+
+document it, catalog it, gate pull requests on it.
+
+::: notes
+For the data engineers in the room: this speaks the standards their platform tools already ingest. R stops being the opaque box in the org's lineage graph.
+:::
+
+# Where we're going {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+## The whole paper trail, assembled
+
+|  | question | answer |
+|---|---|---|
+| {ducklake} | *when / who / why* did tables change? | every write is an authored, versioned commit |
+| {dplyneage} | *where* did each column come from? | exact lineage from your dplyr code |
+
+<br/>
+
+::: {.fragment .statement style="font-size: 1.05em;"}
+**Version everything. Explain everything. Never leave R.**
+:::
+
+::: notes
+Bring the stem back: what changed, who, why — ducklake. Where every column came from — dplyneage. Same lazy tables, so they compose with zero glue.
+:::
+
+## One more thing about time travel
+
+Lineage is a property of your **code**; snapshots are a property of your **data**.
+
+```{r}
+#| eval: false
+get_ducklake_table_version("vehicles_clean", version = 2) |>
+  summarise(avg_mpg = mean(mpg)) |>
+  extract_lineage()   # same DAG as today
+```
+
+<br/>
+
+Time travel changes *what the data was* —
+
+never *where it came from*. The paper trail survives the trip.
+
+::: notes
+The kicker that ties both packages into one idea. Audit question: "for the June submission, what fed this estimate, in the data as of June?" Answer: both, in four lines.
+:::
+
+## Try it (dev versions — bring a helmet)
+
+::: columns
+::: {.column width="60%"}
+```{r}
+#| eval: false
+pak::pak("tgerke/ducklake-r")   # CRAN-bound
+pak::pak("tgerke/dplyneage")    # experimental
+```
+
+- [tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r)
+- [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)
+- DuckLake itself: [ducklake.select](https://ducklake.select)
+
+Both are young. File issues — timeline corrections welcome.
+:::
+
+::: {.column style="width: 40%; text-align: center;"}
+<br/>
+<div class="outatime-plate" style="font-size: 2.2em;">
+<span class="plate-state">CALIFORNIA</span>
+OUTATIME
+<span class="plate-state">THE GOLDEN STATE</span>
+</div>
+<br/>
+[the only error this stack can't fix]{.quiet}
+:::
+:::
+
+::: notes
+Honest maturity slide — experimental lifecycle, ducklake heading to CRAN. Early adopters welcome; the APIs shown today are the stable core.
+:::
+
+## {.center background-image="images/stills/roads.webp" background-size="cover" background-opacity="0.35"}
+
+::: {.statement style="font-size: 1.3em;"}
+Your data's future is whatever you make it.
+
+**So make it a good one.**
+:::
+
+<br/>
+
+::: {style="text-align: center;"}
+[Travis Gerke · PCCTC]{style="color: #c0c5ce;"} <br/>
+[github.com/tgerke/quack-to-the-future]{.cyan style="font-family: 'Fira Code', monospace; font-size: .6em;"}
+:::
+
+::: notes
+Close on the Doc Brown paraphrase, slow and sincere. Slides and code at the repo. Thank you — and drive safely.
+:::

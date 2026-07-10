@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.quarto/
+_freeze/
+/data/
+index_files/
+index.html
+/.luarc.json
+
+/.quarto/

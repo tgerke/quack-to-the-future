@@ -1,0 +1,18 @@
+<script>
+// React Flow widgets fit-to-view against a hidden slide at load time;
+// re-fit via their Controls button whenever their slide becomes visible.
+window.addEventListener('load', function () {
+  if (!window.Reveal) return;
+  var fit = function (slide) {
+    if (!slide) return;
+    [80, 350].forEach(function (delay) {
+      setTimeout(function () {
+        slide.querySelectorAll('.react-flow__controls-fitview')
+          .forEach(function (b) { b.click(); });
+      }, delay);
+    });
+  };
+  Reveal.on('ready', function (e) { fit(e.currentSlide); });
+  Reveal.on('slidechanged', function (e) { fit(e.currentSlide); });
+});
+</script>

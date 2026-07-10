@@ -1,0 +1,7 @@
+project:
+  title: "Quack to the Future"
+  render:
+    - index.qmd
+
+execute:
+  freeze: auto

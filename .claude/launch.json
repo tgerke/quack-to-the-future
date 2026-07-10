@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "slides",
+      "runtimeExecutable": "quarto",
+      "runtimeArgs": ["preview", "index.qmd", "--no-browser", "--no-watch-inputs", "--port", "8123"],
+      "port": 8123
+    }
+  ]
+}
