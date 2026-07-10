@@ -17,7 +17,7 @@
       <stop offset="1" stop-color="#ff9f1c"/>
     </linearGradient>
     <clipPath id="doorway">
-      <path d="M 246 20 L 314 20 L 324 162 L 254 166 Z"/>
+      <path d="M 278 20 L 346 20 L 356 160 L 286 164 Z"/>
     </clipPath>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="5" result="b"/>
@@ -55,13 +55,13 @@
   </g>
 
   <!-- body -->
-  <path d="M 140 130 L 316 122 L 384 152 L 566 176 L 576 188 L 576 198 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="url(#chrome)"/>
+  <path d="M 140 130 L 350 120 L 436 158 L 552 172 L 560 183 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="url(#chrome)"/>
   <!-- black lower trim -->
-  <path d="M 140 191 L 576 197 L 576 198 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="#1a1d33"/>
+  <path d="M 140 191 L 560 196 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="#1a1d33"/>
   <!-- beltline crease -->
-  <path d="M 142 166 L 574 190" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
+  <path d="M 142 166 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
   <!-- hood panel line -->
-  <path d="M 392 158 L 558 179" stroke="#79819a" stroke-width="1.5" opacity="0.6" fill="none"/>
+  <path d="M 444 163 L 544 174" stroke="#79819a" stroke-width="1.5" opacity="0.6" fill="none"/>
   <!-- rear louvers -->
   <g stroke="#5a617a" stroke-width="2" opacity="0.9">
     <path d="M 148 136 L 196 133"/>
@@ -70,28 +70,28 @@
     <path d="M 148 157 L 202 154"/>
   </g>
   <!-- windshield -->
-  <path d="M 322 126 L 382 152 L 358 154 L 308 130 Z" fill="#12142a"/>
+  <path d="M 354 122 L 436 157 L 414 158 L 342 126 Z" fill="#12142a"/>
   <!-- headlight -->
-  <circle cx="568" cy="181" r="4" fill="#fff6d6" opacity="0.9"/>
+  <circle cx="553" cy="178" r="4" fill="#fff6d6" opacity="0.9"/>
 
   <!-- open doorway -->
-  <path d="M 248 126 L 314 123 L 324 162 L 254 166 Z" fill="#12142a"/>
+  <path d="M 280 124 L 346 121 L 356 160 L 286 164 Z" fill="#12142a"/>
 
   <!-- duck -->
   <g clip-path="url(#doorway)">
-    <ellipse cx="282" cy="138" rx="27" ry="24" fill="url(#duckbody)"/>
-    <circle cx="278" cy="98" r="21" fill="url(#duckbody)"/>
+    <ellipse cx="310" cy="136" rx="27" ry="24" fill="url(#duckbody)"/>
+    <circle cx="306" cy="96" r="21" fill="url(#duckbody)"/>
   </g>
-  <path d="M 297 94 q 16 -2 21 6 q -6 9 -21 5 Z" fill="#f25c05"/>
+  <path d="M 325 92 q 16 -2 21 6 q -6 9 -21 5 Z" fill="#f25c05"/>
   <g>
-    <rect x="260" y="86" width="40" height="13" rx="6.5" fill="#12142a"/>
-    <path d="M 260 92 h -7" stroke="#12142a" stroke-width="4" stroke-linecap="round"/>
-    <path d="M 266 91 h 26" stroke="#4cc9f0" stroke-width="2.5" opacity="0.8" stroke-linecap="round"/>
+    <rect x="288" y="84" width="40" height="13" rx="6.5" fill="#12142a"/>
+    <path d="M 288 90 h -7" stroke="#12142a" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 294 89 h 26" stroke="#4cc9f0" stroke-width="2.5" opacity="0.8" stroke-linecap="round"/>
   </g>
 
   <!-- gullwing door, raised -->
   <g>
-    <path d="M 310 123 L 352 34 L 374 39 L 332 125 Z" fill="url(#chrome)" stroke="#6d7590" stroke-width="1.5"/>
-    <path d="M 322 92 L 342 48 L 356 51 L 336 96 Z" fill="#12142a"/>
+    <path d="M 342 121 L 384 32 L 406 37 L 364 123 Z" fill="url(#chrome)" stroke="#6d7590" stroke-width="1.5"/>
+    <path d="M 354 90 L 374 46 L 388 49 L 368 94 Z" fill="#12142a"/>
   </g>
 </svg>
