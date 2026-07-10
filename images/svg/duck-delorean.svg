@@ -26,7 +26,7 @@
   </defs>
 
   <!-- ground shadow -->
-  <ellipse cx="350" cy="236" rx="230" ry="7" fill="#070912" opacity="0.55"/>
+  <ellipse cx="358" cy="236" rx="220" ry="7" fill="#070912" opacity="0.55"/>
 
   <!-- fire trails -->
   <g filter="url(#glow)">
@@ -49,25 +49,25 @@
 
   <!-- Mr. Fusion -->
   <g>
-    <rect x="148" y="104" width="20" height="26" rx="3" fill="#c3c9d8" stroke="#79819a" stroke-width="1.5"/>
-    <circle cx="158" cy="104" r="9" fill="#d9dee9" stroke="#79819a" stroke-width="1.5"/>
-    <rect x="153" y="112" width="10" height="8" rx="1.5" fill="#f25c05" opacity="0.85"/>
+    <rect x="166" y="104" width="20" height="26" rx="3" fill="#c3c9d8" stroke="#79819a" stroke-width="1.5"/>
+    <circle cx="176" cy="104" r="9" fill="#d9dee9" stroke="#79819a" stroke-width="1.5"/>
+    <rect x="171" y="112" width="10" height="8" rx="1.5" fill="#f25c05" opacity="0.85"/>
   </g>
 
   <!-- body -->
-  <path d="M 140 130 L 350 120 L 436 158 L 552 172 L 560 183 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="url(#chrome)"/>
+  <path d="M 158 129 L 350 120 L 436 158 L 552 172 L 560 183 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 158 202 Z" fill="url(#chrome)"/>
   <!-- black lower trim -->
-  <path d="M 140 191 L 560 196 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 140 202 Z" fill="#1a1d33"/>
+  <path d="M 158 191 L 560 196 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 158 202 Z" fill="#1a1d33"/>
   <!-- beltline crease -->
-  <path d="M 142 166 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
+  <path d="M 160 167 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
   <!-- hood panel line -->
   <path d="M 444 163 L 544 174" stroke="#79819a" stroke-width="1.5" opacity="0.6" fill="none"/>
   <!-- rear louvers -->
   <g stroke="#5a617a" stroke-width="2" opacity="0.9">
-    <path d="M 148 136 L 196 133"/>
-    <path d="M 148 143 L 198 140"/>
-    <path d="M 148 150 L 200 147"/>
-    <path d="M 148 157 L 202 154"/>
+    <path d="M 166 136 L 212 133"/>
+    <path d="M 166 143 L 214 140"/>
+    <path d="M 166 150 L 216 147"/>
+    <path d="M 166 157 L 218 154"/>
   </g>
   <!-- windshield -->
   <path d="M 354 122 L 436 157 L 414 158 L 342 126 Z" fill="#12142a"/>
