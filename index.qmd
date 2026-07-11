@@ -88,7 +88,7 @@ Don't rush this one. "Hi, I'm Travis. I lead data science at the Prostate Cancer
 ::: {.statement}
 This month, someone asks:
 
-["Hey — this number **changed** since the last version.<br/> What happened?"]{.fragment}
+["Hey, this number **changed** since the last version.<br/> What happened?"]{.fragment}
 :::
 
 <br/>
@@ -155,7 +155,7 @@ Your past analyses are fading from the photo.
 :::
 
 ::: notes
-The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing — the present looks fine, and the past is just gone.
+The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing: the present looks fine, and the past is just gone.
 :::
 
 ## {.center}
@@ -163,7 +163,7 @@ The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an e
 ::: {.statement}
 Data pipelines need a **paper trail**:
 
-what changed, *who* changed it, *why* —
+what changed, *who* changed it, *why*,
 
 and where every column **came from**.
 :::
@@ -175,7 +175,7 @@ That's the whole talk. Everything else is how to get it without leaving R.
 :::
 
 ::: notes
-The governing idea — the "stem." Say it slowly. Everything in the next 18 minutes hangs off this sentence.
+The governing idea, the "stem." Say it slowly. Everything in the next 18 minutes hangs off this sentence.
 :::
 
 # What the big-data world does {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -203,14 +203,14 @@ The catch: that world assumes a JVM, a cluster, and a platform team.
 :::
 
 ::: notes
-Audience calibration slide — most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem.
+Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem.
 :::
 
 ## You already have the engine
 
 **DuckDB**: a full analytical database that lives *inside your R session*.
 
-- `install.packages("duckdb")` — no server, no cluster, no IT ticket
+- `install.packages("duckdb")`: no server, no cluster, no IT ticket
 - Queries Parquet/CSV directly, scales past memory
 - dbplyr speaks fluent DuckDB: your dplyr code *is* the SQL
 
@@ -229,7 +229,7 @@ One-slide DuckDB primer for those who haven't touched it. The point to leave in 
 A DuckDB extension where the **entire lakehouse** is:
 
 1. Parquet files in a folder (or S3)
-2. A plain SQL database as the catalog — DuckDB, SQLite, or Postgres
+2. A plain SQL database as the catalog (DuckDB, SQLite, or Postgres)
 
 That's it. No JVM, no manifest files, no Zookeeper sacrifice.
 :::
@@ -312,7 +312,7 @@ Fancy name, honest idea: keep raw data sacred, refine in stages, analyze from go
 :::
 
 ::: notes
-Medallion in 20 seconds — it's just staged refinement with rules. The demo follows these three hops.
+Medallion in 20 seconds: it's just staged refinement with rules. The demo follows these three hops.
 :::
 
 ## Bronze: every write is a commit
@@ -331,7 +331,7 @@ with_transaction({
 <br/>
 
 ::: incremental
-- The write is **atomic** — both tables or neither
+- The write is **atomic**: both tables or neither
 - It's recorded with an **author** and a **commit message**
 - Sound familiar? It's a `git commit` for your data.
 :::
@@ -361,10 +361,10 @@ with_transaction(
   author = "doc", commit_message = "Gold: efficiency by origin")
 ```
 
-`get_ducklake_table()` returns a **lazy dbplyr table** — DuckDB does the work, nothing is collected until you ask.
+`get_ducklake_table()` returns a **lazy dbplyr table**: DuckDB does the work, nothing is collected until you ask.
 
 ::: notes
-No new verbs to learn: mutate, join, summarise. The only additions are the bookends — get table, create table, wrapped in a documented transaction.
+No new verbs to learn: mutate, join, summarise. The only additions are the bookends: get table, create table, wrapped in a documented transaction.
 :::
 
 ## Your data has a git log now
@@ -381,7 +381,7 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
 ::: notes
-Pause and let them read — this output is real, generated when the deck rendered. This is the audit trail slide.
+Pause and let them read; this output is real, generated when the deck rendered. This is the audit trail slide.
 :::
 
 ## Time travel {.center}
@@ -400,7 +400,7 @@ get_ducklake_table_version("vehicles_clean", version = 2) |>
 </div>
 
 ::: notes
-Query any table exactly as it existed at any snapshot — or any timestamp, with `get_ducklake_table_asof()`. No backup archaeology, no restore drills.
+Query any table exactly as it existed at any snapshot, or any timestamp with `get_ducklake_table_asof()`. No backup archaeology, no restore drills.
 :::
 
 ## Then Biff gets write access
@@ -423,7 +423,7 @@ get_ducklake_table("vehicles_clean") |> tally() |> collect()
 :::
 
 ::: notes
-Every team has a Biff. Sometimes Biff is you, at 4:47 PM. The point isn't preventing the mistake — it's that the mistake is now visible, attributed, and reversible.
+Every team has a Biff. Sometimes Biff is you, at 4:47 PM. You can't prevent the mistake; you can make it visible, attributed, and reversible.
 :::
 
 ## Fixing the timeline
@@ -434,7 +434,7 @@ get_ducklake_table("vehicles_clean") |> tally() |> collect()
 ```
 
 ::: {.fragment}
-Restore rolls **forward** as a *new* snapshot — Biff's mistake stays in the log.
+Restore rolls **forward** as a *new* snapshot: Biff's mistake stays in the log.
 
 You fix the timeline **without erasing anyone from the photo**.
 :::
@@ -464,13 +464,13 @@ plot_snapshots() + theme_bttf
 ![](images/stills/clock-tower.webp){width="380"}
 
 ::: {.quiet}
-In my world — prostate cancer clinical trials — "trust me" is not an audit trail. *This* is what a regulator can read.
+In my world of prostate cancer clinical trials, "trust me" is not an audit trail. *This* is what a regulator can read.
 :::
 :::
 :::
 
 ::: notes
-The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04 — and you can prove it.
+The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
 
 # Part II: the flux capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -490,7 +490,7 @@ The Y-shaped diagram in Doc's car?
 :::
 
 ::: notes
-Act break two. ducklake answers when/who/why per table; dplyneage answers the finer question — where did this *column* come from. It's what makes lineage possible.
+Act break two. ducklake answers when/who/why per table; dplyneage answers the finer question: where did this *column* come from. It's what makes lineage possible.
 :::
 
 ## What "column-level lineage" means
@@ -508,7 +508,7 @@ gold.avg_mpg
 
 <br/>
 
-Not "these tables are related" — **this cell traces to that column, via this expression.**
+Table-level tools stop at "these tables are related." This goes further: **this cell traces to that column, via this expression.**
 
 ::: notes
 Table-level lineage is common; column-level is the version that answers real questions during an audit or a debugging session.
@@ -529,7 +529,7 @@ get_ducklake_table("vehicles_clean") |>
 ```
 
 ::: notes
-The money demo. Take any dplyr pipeline you already have, pipe it into two more functions. Next slide is the live widget — drag a node, hover an edge to show the expression labels.
+The money demo. Take any dplyr pipeline you already have, pipe it into two more functions. Next slide is the live widget: drag a node, hover an edge to show the expression labels.
 :::
 
 ## No plutonium required
@@ -538,7 +538,7 @@ How does it know?
 
 ::: incremental
 - Your dplyr pipeline is already a **lazy query tree** (thanks, dbplyr)
-- {dplyneage} walks that tree directly — **pure R**, exact attribution
+- {dplyneage} walks that tree directly, in **pure R**, with exact attribution
 - Joins, aggregations, windows, unions: resolved to true source columns
 - Raw SQL strings? A sqlglot fallback handles those (Python optional)
 :::
@@ -613,7 +613,7 @@ lineage_diff(old, new)     # CI check: "this PR rewires gold.avg_mpg"
 
 <br/>
 
-Lineage as **data**, not just a picture:
+Lineage you can treat as **data**:
 
 document it, catalog it, gate pull requests on it.
 
@@ -637,7 +637,7 @@ For the data engineers in the room: this speaks the standards their platform too
 :::
 
 ::: notes
-Bring the stem back: what changed, who, why — ducklake. Where every column came from — dplyneage. Same lazy tables, so they compose with zero glue.
+Bring the stem back: what changed, who, why is ducklake. Where every column came from is dplyneage. Same lazy tables, so they compose with zero glue.
 :::
 
 ## One more thing about time travel
@@ -653,7 +653,7 @@ get_ducklake_table_version("vehicles_clean", version = 2) |>
 
 <br/>
 
-Time travel changes *what the data was* —
+Time travel changes *what the data was*,
 
 never *where it came from*. The paper trail survives the trip.
 
@@ -661,7 +661,7 @@ never *where it came from*. The paper trail survives the trip.
 The kicker that ties both packages into one idea. Audit question: "for the June submission, what fed this estimate, in the data as of June?" Answer: both, in four lines.
 :::
 
-## Try it (dev versions — bring a helmet)
+## Try it (dev versions, bring a helmet)
 
 ::: columns
 ::: {.column width="60%"}
@@ -675,7 +675,7 @@ pak::pak("tgerke/dplyneage")    # experimental
 - [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)
 - DuckLake itself: [ducklake.select](https://ducklake.select)
 
-Both are young. File issues — timeline corrections welcome.
+Both are young. File issues; timeline corrections welcome.
 :::
 
 ::: {.column style="width: 40%; text-align: center;"}
@@ -691,7 +691,7 @@ OUTATIME
 :::
 
 ::: notes
-Honest maturity slide — experimental lifecycle, ducklake heading to CRAN. Early adopters welcome; the APIs shown today are the stable core.
+Honest maturity slide: experimental lifecycle, ducklake heading to CRAN. Early adopters welcome; the APIs shown today are the stable core.
 :::
 
 ## {.center background-image="images/stills/roads.webp" background-size="cover" background-opacity="0.35"}
@@ -710,5 +710,5 @@ Your data's future is whatever you make it.
 :::
 
 ::: notes
-Close on the Doc Brown paraphrase, slow and sincere. Slides and code at the repo. Thank you — and drive safely.
+Close on the Doc Brown paraphrase, slow and sincere. Slides and code at the repo. Thank you, and drive safely.
 :::
