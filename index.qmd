@@ -97,8 +97,16 @@ This month, someone asks:
 And you have absolutely no idea.
 :::
 
+::: {.fragment style="text-align: center; margin-top: .4em;"}
+Somewhere in the past, your data's timeline **skewed**.
+
+[And nobody has the chalkboard.]{.quiet}
+:::
+
 ::: notes
 The Articulation opening: a problem everyone in the room has lived. Let the question hang. Almost every hand goes up if you ask who's been here.
+
+Last click is the Part II beat: Marty comes back to a 1985 gone wrong, and it takes Doc at a chalkboard to show him where the timeline forked. Say it plainly: "Someone changed your data somewhere upstream. You're living in the alternate 1985 of your own report, and there's no Doc Brown to draw you the diagram." Pays off later at the almanac/lineage slide.
 :::
 
 ## You go looking for answers {.center}
