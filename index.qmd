@@ -415,8 +415,9 @@ Query any table exactly as it existed at any snapshot, or any timestamp with `ge
 #| output: false
 with_transaction(
   get_ducklake_table("vehicles_clean") |>
-    filter(mpg > 25) |>            # "cleanup"
-    replace_table("vehicles_clean"),
+    rows_delete(
+      get_ducklake_table("vehicles_clean") |> filter(mpg < 25),   # "cleanup"
+      by = "model"),
   author = "biff", commit_message = "small tweak")
 ```
 
@@ -430,6 +431,32 @@ get_ducklake_table("vehicles_clean") |> tally() |> collect()
 
 ::: notes
 Every team has a Biff. Sometimes Biff is you, at 4:47 PM. You can't prevent the mistake; you can make it visible, attributed, and reversible.
+:::
+
+## "What happened?" is now a query
+
+```{r}
+#| output-location: fragment
+get_table_changes("vehicles_clean", start = 4, end = 4) |>
+  select(change_type, model, mpg) |>
+  head(3) |>
+  collect()
+```
+
+```{r}
+#| include: false
+n_biff_deleted <- get_table_changes("vehicles_clean", start = 4, end = 4) |>
+  filter(change_type == "delete") |> tally() |> collect() |> pull(n)
+```
+
+::: {.fragment}
+All `r n_biff_deleted` deleted rows, with the values they had **before** Biff touched them.
+
+The question from slide one has an answer now: not a guess, the *rows*.
+:::
+
+::: notes
+The payoff of the opening hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
 :::
 
 ## Fixing the timeline
@@ -557,6 +584,8 @@ No parsing your SQL with regex. No YAML confessional. No Python required.
 
 ::: notes
 For the "what's the catch" people: dbplyr already built the query tree; dplyneage just finally reads it. That's why attribution is exact rather than best-effort string matching.
+
+Likely Q&A: "does it work on plain data frames?" A local dplyr pipeline has no query tree to walk, so no. The one-line fix is dbplyr::memdb_frame() or copy_to(), and the identical pipeline becomes traceable; extract_lineage() errors with exactly that pointer as of 0.2.0.
 :::
 
 ## Before you change the past…
@@ -667,14 +696,14 @@ never *where it came from*. The paper trail survives the trip.
 The kicker that ties both packages into one idea. Audit question: "for the June submission, what fed this estimate, in the data as of June?" Answer: both, in four lines.
 :::
 
-## Try it (dev versions, bring a helmet)
+## Try it (bring a helmet)
 
 ::: columns
 ::: {.column width="60%"}
 ```{r}
 #| eval: false
-pak::pak("tgerke/ducklake-r")   # CRAN-bound
-pak::pak("tgerke/dplyneage")    # experimental
+pak::pak("tgerke/ducklake-r")   # CRAN submission in review
+pak::pak("tgerke/dplyneage")    # v0.2.0 on GitHub
 ```
 
 - [tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r)
@@ -697,7 +726,7 @@ OUTATIME
 :::
 
 ::: notes
-Honest maturity slide: experimental lifecycle, ducklake heading to CRAN. Early adopters welcome; the APIs shown today are the stable core.
+Honest maturity slide: both packages carry experimental lifecycle badges. dplyneage 0.2.0 tagged on GitHub July 2026; ducklake's CRAN submission is in review, and v0.4.1 is archived on Zenodo with a DOI if anyone wants to cite it. Early adopters welcome; the APIs shown today are the stable core.
 :::
 
 ## {.center background-image="images/stills/roads.webp" background-size="cover" background-opacity="0.35"}
