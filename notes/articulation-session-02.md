@@ -19,22 +19,19 @@ The stem sentence carries over from session 1:
 
 ## The outline
 
-**Hook** (1 slide). The fading Polaroid, straight off the title slide. We have
-versioned code religiously for years; the data that code produces gets
-overwrite-and-hope, and every overwrite erases what the data looked like, who
-changed it, and why. Click: the photo fades. The ask lands in minute one,
-on the slide: version the data like you version the code.
+**Hook** (1 slide). The whole cold open on one slide, straight off the title:
+the FINAL_v2 filename pileup beside the fading Polaroid. The folder gets the
+laugh. Click: the photo fades, history quietly erasing itself. Click: the
+question, "hey, this number changed since the last version, what happened?"
+and you have absolutely no idea. Click: the ask, on the slide in minute one:
+version the data like you version the code.
 
-**Setup** (5 slides).
+**Setup** (3 slides).
 
-1. "Hey, this number changed since the last version. What happened?" And you
-   have no idea. The fade, lived.
-2. The laugh: the FINAL_v2 filename pileup, Slack as the audit log, memory as
-   the lineage system.
-3. We solved this once, for code. Commits, checkouts, `git blame`; the
-   pipeline's output gets none of it. The hook's claim, made mechanical.
-4. The stem slide.
-5. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
+1. We solved this once, for code. Commits, checkouts, `git blame`; the
+   pipeline's output gets none of it. The hook's ask, made mechanical.
+2. The stem slide.
+3. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
    Iceberg and Delta solved this years ago behind a JVM and a platform team;
    this room was priced out of the solution, not the problem. Ends on "here's
    the door."
@@ -79,10 +76,11 @@ line for focus, kept alive for Q&A.
 - The cut list from session 1 executed as written: interchange formats and the
   whole-lake DAG moved to backup, and the "one more thing" kicker collapsed to
   one line on the summary slide.
-- The postcard moved to the front. It sat mid-setup; it now opens the talk as
-  the hook, so the strongest visual leads and the norm ask is spoken in minute
-  one. The changed-number story slid back into setup, where it plays as the
-  fade felt from the inside.
+- The opening compressed for time. The postcard now leads as the hook, and the
+  changed-number question and the FINAL_v2 pileup fold onto that same slide:
+  one cold open with three clicks instead of three slides. The strongest
+  visual goes first, and the norm ask is spoken in minute one. The deck drops
+  from 33 to 31 counted slides.
 - Each chapter divider now states its job on the slide: build it, drive it,
   trace it. The chapter names stay Back to the Future; the labels say what you
   learn.

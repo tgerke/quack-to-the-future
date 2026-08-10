@@ -85,63 +85,9 @@ Don't rush this one. "Hi, I'm Travis. I lead data science at the Prostate Cancer
 
 ## Unversioned data fades {.center}
 
-::: columns
-::: {.column style="width: 55%; text-align: center;"}
-<div class="polaroid">
-<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 480px;" alt="Marty's fading family photograph"/>
-</div>
-:::
-
-::: {.column style="width: 45%; font-size: .95em;"}
-We version our **code** religiously.
-
-The data it produces? Every overwrite quietly **erases history**:
-
-- what the data looked like before
-- who changed it
-- *why* they changed it
-
-::: {.fragment}
-Your past analyses are fading from the photo.
-
-[Version the data like you version the code.]{.orange}
-:::
-:::
-:::
-
-::: notes
-The opener, straight off the title slide. Let the crisp photo sit while you name the double standard: years of git, renv, and CI for code, overwrite-and-hope for data. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing: the present looks fine, and the past is just gone. Click: the ask, out loud in minute one. The next two slides are what the fade feels like from the inside.
-:::
-
-## Last month, you shipped a report {.center}
-
-::: {.statement}
-This month, someone asks:
-
-["Hey, this number **changed** since the last version.<br/> What happened?"]{.fragment}
-:::
-
-<br/>
-
-::: {.fragment .quiet style="text-align: center;"}
-And you have absolutely no idea.
-:::
-
-::: {.fragment style="text-align: center; margin-top: .4em;"}
-Somewhere in the past, your data's timeline **skewed**.
-:::
-
-::: notes
-The fade, lived: a problem everyone in the room has had. Let the question hang. Almost every hand goes up if you ask who's been here.
-
-Last click is the Part II beat: Marty comes back to a 1985 gone wrong and can't tell where the timeline forked. Say it plainly: "Someone changed your data somewhere upstream, and you're living in the alternate 1985 of your own report." Pays off later at the almanac/lineage slide.
-:::
-
-## You go looking for answers {.center}
-
-::: columns
-::: {.column width="55%"}
-<div class="terminal">
+::: {.columns style="align-items: center;"}
+::: {.column style="width: 50%;"}
+<div class="terminal" style="font-size: .6em;">
 <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/projects/q3-report/data</div>
 <div class="term-body">
 analysis_data.csv<br/>
@@ -155,17 +101,25 @@ analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
 </div>
 :::
 
-::: {.column width="45%"}
-<div class="chat-meta">Slack, 4:47 PM</div>
-<div class="chat them">which one is current?</div>
-<div class="chat me">USE_THIS_ONE, I think</div>
-<div class="chat them">you *think*?</div>
-<div class="chat me fragment">…do you remember why row 1,204 changed in March?</div>
+::: {.column style="width: 50%; text-align: center;"}
+<div class="polaroid">
+<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 440px;" alt="Marty's fading family photograph"/>
+</div>
 :::
 :::
 
+::: {.fragment style="text-align: center; margin-top: .4em;"}
+"Hey, this number **changed** since the last version. What happened?"
+
+[You have absolutely no idea. Somewhere in the past, the timeline **skewed**.]{.quiet}
+:::
+
+::: {.fragment style="text-align: center; margin-top: .3em;"}
+[Version the data like you version the code.]{.orange}
+:::
+
 ::: notes
-Get the laugh, then twist the knife: filenames are our version control, Slack is our audit log, and memory is our lineage system.
+The whole cold open on one slide. The folder gets the laugh: filenames are our version control, Slack is our audit log, memory is our lineage system. Click: the photo fades. Every overwrite of an existing file is Marty's siblings disappearing; the present looks fine, and what the data looked like, who changed it, and why are quietly erased. Click: the question everyone in the room has been asked, and the honest answer. This is Marty's alternate 1985: someone changed your data upstream, and you're living in the wrong timeline of your own report; pays off at the change-feed and almanac slides. Click: the ask, out loud in minute one. Next slide: the fix is already in this room's muscle memory.
 :::
 
 ## We solved this once, for code {.center}
@@ -478,7 +432,7 @@ The question from the opening has an answer now: not a guess, the *rows*.
 :::
 
 ::: notes
-The payoff of the changed-number question from the setup. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
+The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
 :::
 
 ## Fixing the timeline
