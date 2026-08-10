@@ -83,6 +83,36 @@ Don't rush this one. "Hi, I'm Travis. I lead data science at the Prostate Cancer
 
 # The problem {.divider visibility="hidden"}
 
+## Unversioned data fades {.center}
+
+::: columns
+::: {.column style="width: 55%; text-align: center;"}
+<div class="polaroid">
+<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 480px;" alt="Marty's fading family photograph"/>
+</div>
+:::
+
+::: {.column style="width: 45%; font-size: .95em;"}
+We version our **code** religiously.
+
+The data it produces? Every overwrite quietly **erases history**:
+
+- what the data looked like before
+- who changed it
+- *why* they changed it
+
+::: {.fragment}
+Your past analyses are fading from the photo.
+
+[Version the data like you version the code.]{.orange}
+:::
+:::
+:::
+
+::: notes
+The opener, straight off the title slide. Let the crisp photo sit while you name the double standard: years of git, renv, and CI for code, overwrite-and-hope for data. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing: the present looks fine, and the past is just gone. Click: the ask, out loud in minute one. The next two slides are what the fade feels like from the inside.
+:::
+
 ## Last month, you shipped a report {.center}
 
 ::: {.statement}
@@ -102,7 +132,7 @@ Somewhere in the past, your data's timeline **skewed**.
 :::
 
 ::: notes
-The Articulation opening: a problem everyone in the room has lived. Let the question hang. Almost every hand goes up if you ask who's been here.
+The fade, lived: a problem everyone in the room has had. Let the question hang. Almost every hand goes up if you ask who's been here.
 
 Last click is the Part II beat: Marty comes back to a 1985 gone wrong and can't tell where the timeline forked. Say it plainly: "Someone changed your data somewhere upstream, and you're living in the alternate 1985 of your own report." Pays off later at the almanac/lineage slide.
 :::
@@ -138,32 +168,6 @@ analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
 Get the laugh, then twist the knife: filenames are our version control, Slack is our audit log, and memory is our lineage system.
 :::
 
-## Unversioned data fades {.center}
-
-::: columns
-::: {.column style="width: 55%; text-align: center;"}
-<div class="polaroid">
-<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 480px;" alt="Marty's fading family photograph"/>
-</div>
-:::
-
-::: {.column width="45%"}
-Every overwrite quietly **erases history**:
-
-- what the data looked like before
-- who changed it
-- *why* they changed it
-
-::: {.fragment}
-Your past analyses are fading from the photo.
-:::
-:::
-:::
-
-::: notes
-The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing: the present looks fine, and the past is just gone.
-:::
-
 ## We solved this once, for code {.center}
 
 For **code**, this room treats version control as a given:
@@ -175,13 +179,13 @@ For **code**, this room treats version control as a given:
 :::
 
 ::: {.fragment style="text-align: center; margin-top: .6em;"}
-The data your code produces gets none of that.
+The data your pipelines produce gets none of that.
 
 [Overwrite and hope.]{.orange}
 :::
 
 ::: notes
-Name the double standard plainly. This community made code versioning a norm: git, renv, lockfiles, CI on every push. Then the pipeline's output lands in a CSV with no history at all. Nobody chose that on purpose; the tooling made one easy and the other hard.
+The hook named the double standard; this slide makes it mechanical. Commits, checkouts, and blame on one side; the pipeline's output landing in a CSV with no history on the other. Nobody chose that on purpose; the tooling made one easy and the other hard.
 :::
 
 ## {.center}
@@ -237,6 +241,10 @@ Audience calibration slide: most of the room has heard "lakehouse" but wouldn't 
 <div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
 <div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
 </div>
+
+::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
+**Build it:** three lines of R to a lake where every write is an authored commit.
+:::
 
 ::: notes
 Act break, chapter one: build the machine. Two quick intros (the engine, then the format), and the build itself is three lines. "{ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out."
@@ -397,7 +405,7 @@ Pause and let them read; this output is real, generated when the deck rendered. 
 # Part II: time travel {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
-The lake remembers everything. Time to drive.
+The lake remembers everything. **Drive it:** query the past, see exactly what changed, undo mistakes.
 :::
 
 ::: notes
@@ -466,11 +474,11 @@ n_biff_deleted <- get_table_changes("vehicles_clean", start = 4, end = 4) |>
 ::: {.fragment}
 All `r n_biff_deleted` deleted rows, with the values they had **before** Biff touched them.
 
-The question from slide one has an answer now: not a guess, the *rows*.
+The question from the opening has an answer now: not a guess, the *rows*.
 :::
 
 ::: notes
-The payoff of the opening hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
+The payoff of the changed-number question from the setup. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
 :::
 
 ## Fixing the timeline
@@ -551,6 +559,8 @@ The Y-shaped diagram in Doc's car?
 **It was a lineage DAG all along.**
 
 [{dplyneage}: column-level lineage for dplyr pipelines]{.cyan}
+
+[**Trace it:** follow every column to its source, and know what breaks before you change the past.]{style="font-size: .85em; color: #c0c5ce;"}
 :::
 :::
 

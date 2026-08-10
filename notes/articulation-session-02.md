@@ -19,17 +19,22 @@ The stem sentence carries over from session 1:
 
 ## The outline
 
-**Hook** (2 slides). "Hey, this number changed since the last version. What
-happened?" And you have no idea. Then the laugh: the FINAL_v2 filename pileup,
-Slack as the audit log, memory as the lineage system.
+**Hook** (1 slide). The fading Polaroid, straight off the title slide. We have
+versioned code religiously for years; the data that code produces gets
+overwrite-and-hope, and every overwrite erases what the data looked like, who
+changed it, and why. Click: the photo fades. The ask lands in minute one,
+on the slide: version the data like you version the code.
 
-**Setup** (4 slides).
+**Setup** (5 slides).
 
-1. The fading Polaroid: every overwrite quietly erases history.
-2. New beat: we solved this once, for code. Commits, checkouts, `git blame`.
-   The data gets overwrite-and-hope. This names the double standard out loud.
-3. The stem slide.
-4. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
+1. "Hey, this number changed since the last version. What happened?" And you
+   have no idea. The fade, lived.
+2. The laugh: the FINAL_v2 filename pileup, Slack as the audit log, memory as
+   the lineage system.
+3. We solved this once, for code. Commits, checkouts, `git blame`; the
+   pipeline's output gets none of it. The hook's claim, made mechanical.
+4. The stem slide.
+5. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
    Iceberg and Delta solved this years ago behind a JVM and a platform team;
    this room was priced out of the solution, not the problem. Ends on "here's
    the door."
@@ -74,6 +79,13 @@ line for focus, kept alive for Q&A.
 - The cut list from session 1 executed as written: interchange formats and the
   whole-lake DAG moved to backup, and the "one more thing" kicker collapsed to
   one line on the summary slide.
+- The postcard moved to the front. It sat mid-setup; it now opens the talk as
+  the hook, so the strongest visual leads and the norm ask is spoken in minute
+  one. The changed-number story slid back into setup, where it plays as the
+  fade felt from the inside.
+- Each chapter divider now states its job on the slide: build it, drive it,
+  trace it. The chapter names stay Back to the Future; the labels say what you
+  learn.
 
 ## Chapter jobs in one line each, if they ask
 
