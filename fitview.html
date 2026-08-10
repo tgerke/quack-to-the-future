@@ -1,10 +1,21 @@
 <script>
-// React Flow widgets fit-to-view against a hidden slide at load time;
-// re-fit via their Controls button whenever their slide becomes visible.
+// React Flow widgets initialize against a hidden slide at load time and keep
+// zero internal dimensions, so their Controls fit button no-ops. Rebind each
+// widget the first time its slide is shown, then re-fit via the button on
+// later visits.
 window.addEventListener('load', function () {
   if (!window.Reveal) return;
   var fit = function (slide) {
     if (!slide) return;
+    var stale = slide.querySelectorAll('.lineage_flow.html-widget-static-bound:not([data-refit])');
+    if (stale.length && window.HTMLWidgets) {
+      stale.forEach(function (el) {
+        el.setAttribute('data-refit', '1');
+        el.classList.remove('html-widget-static-bound');
+        el.innerHTML = '';
+      });
+      window.HTMLWidgets.staticRender();
+    }
     [80, 350].forEach(function (delay) {
       setTimeout(function () {
         slide.querySelectorAll('.react-flow__controls-fitview')
