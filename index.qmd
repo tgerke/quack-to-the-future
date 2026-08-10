@@ -164,6 +164,26 @@ Your past analyses are fading from the photo.
 The BTTF thesis statement. Click: the photo fades. Every `write_csv()` over an existing file is Marty's siblings disappearing: the present looks fine, and the past is just gone.
 :::
 
+## We solved this once, for code {.center}
+
+For **code**, this room treats version control as a given:
+
+::: incremental
+- every change is a commit, with an author and a message
+- any past state is one checkout away
+- "who changed this, and why?" has a command: `git blame`
+:::
+
+::: {.fragment style="text-align: center; margin-top: .6em;"}
+The data your code produces gets none of that.
+
+[Overwrite and hope.]{.orange}
+:::
+
+::: notes
+Name the double standard plainly. This community made code versioning a norm: git, renv, lockfiles, CI on every push. Then the pipeline's output lands in a CSV with no history at all. Nobody chose that on purpose; the tooling made one easy and the other hard.
+:::
+
 ## {.center}
 
 ::: {.statement}
@@ -177,14 +197,12 @@ and where every column **came from**.
 <br/>
 
 ::: {.quiet style="text-align: center;"}
-That's the whole talk. Everything else is how to get it without leaving R.
+That's the whole talk: git-grade history for your data, without leaving R.
 :::
 
 ::: notes
 The governing idea, the "stem." Say it slowly. Everything in the next 18 minutes hangs off this sentence.
 :::
-
-# What the big-data world does {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ## The lakehouse, in one slide
 
@@ -209,7 +227,19 @@ The catch: that world assumes a JVM, a cluster, and a platform team.
 :::
 
 ::: notes
-Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem.
+Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
+:::
+
+# Part I: the time machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+<div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
+<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
+<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
+<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
+</div>
+
+::: notes
+Act break, chapter one: build the machine. Two quick intros (the engine, then the format), and the build itself is three lines. "{ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out."
 :::
 
 ## You already have the engine
@@ -238,6 +268,10 @@ A DuckDB extension where the **entire lakehouse** is:
 2. A plain SQL database as the catalog (DuckDB, SQLite, or Postgres)
 
 That's it. No JVM, no manifest files, no Zookeeper sacrifice.
+
+::: {.fragment}
+[Same pattern as Iceberg and Delta, at a scale one person can own.]{.quiet}
+:::
 :::
 
 ::: {.column width="50%"}
@@ -256,37 +290,7 @@ data/lake/<br/>
 :::
 
 ::: notes
-The "aha" for skeptics: you can `ls` your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own.
-:::
-
-## The other half of the paper trail
-
-SQL teams already get **column-level lineage** from tools like dbt and SQLMesh:
-
-> "`gold.avg_mpg` is computed from `vehicles_raw.mpg`, through these two models."
-
-<br/>
-
-::: {.fragment}
-For **dplyr pipelines**? Nothing. The lineage lives in your head,
-
-and your head does not survive job changes.
-:::
-
-::: notes
-Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
-:::
-
-# Part I: the time machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
-
-<div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
-<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
-<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
-<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
-</div>
-
-::: notes
-Act break. "{ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out."
+The "aha" for skeptics: you can `ls` your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own. This is my vehicle for the talk; the pattern is the point, and this is the version of it that fits in a folder.
 :::
 
 ## Three lines to a lakehouse
@@ -387,7 +391,17 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
 ::: notes
-Pause and let them read; this output is real, generated when the deck rendered. This is the audit trail slide.
+Pause and let them read; this output is real, generated when the deck rendered. This is the audit trail slide, and the button on chapter one: the lake exists and it remembers. Chapter two is what the remembering buys you.
+:::
+
+# Part II: time travel {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
+The lake remembers everything. Time to drive.
+:::
+
+::: notes
+Act break, chapter two: use the machine. Reading history, surviving Biff, and proving to an auditor exactly what the data was.
 :::
 
 ## Time travel {.center}
@@ -506,7 +520,25 @@ In my world of prostate cancer clinical trials, "trust me" is not an audit trail
 The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
 
-# Part II: the flux capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+## The other half of the paper trail
+
+SQL teams already get **column-level lineage** from tools like dbt and SQLMesh:
+
+> "`gold.avg_mpg` is computed from `vehicles_raw.mpg`, through these two models."
+
+<br/>
+
+::: {.fragment}
+For **dplyr pipelines**? Nothing. The lineage lives in your head,
+
+and your head does not survive job changes.
+:::
+
+::: notes
+The turn into chapter three. Snapshots answer what changed, who, and why. The stem has one clause left: where every column came from. Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
+:::
+
+# Part III: the flux capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: columns
 ::: {.column width="45%"}
@@ -523,7 +555,7 @@ The Y-shaped diagram in Doc's car?
 :::
 
 ::: notes
-Act break two. ducklake answers when/who/why per table; dplyneage answers the finer question: where did this *column* come from. It's what makes lineage possible.
+Act break, chapter three. ducklake answers when/who/why per table; dplyneage answers the finer question: where did this *column* come from. It's what makes lineage possible.
 :::
 
 ## What "column-level lineage" means
@@ -616,46 +648,6 @@ Impact analysis as a function call: know what a change touches **before** you ma
 The almanac lesson: changing upstream data without knowing the downstream consequences is how you get the bad 1985. Renaming a column? Ask lineage_downstream first.
 :::
 
-## Lineage across the whole lake
-
-```{r}
-#| output-location: slide
-silver <- get_ducklake_table("vehicles_raw") |>
-  mutate(cyl = as.integer(cyl), heavy = wt > 3.5) |>
-  select(model, mpg, cyl, wt, heavy)
-
-gold <- get_ducklake_table("vehicles_clean") |>
-  left_join(get_ducklake_table("origins_raw"), by = "model") |>
-  group_by(origin) |>
-  summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n())
-
-extract_lineage(list(vehicles_clean = silver, efficiency_by_origin = gold)) |>
-  lineage_flow(height = "560px")
-```
-
-::: notes
-Name your models in a list and the layers stitch: bronze through gold in one DAG. This is the dbt docs page experience, generated from the dplyr you already wrote.
-:::
-
-## And it travels beyond R
-
-```{r}
-#| eval: false
-lineage_mermaid(lin)       # Mermaid text: renders on GitHub, in Quarto docs
-lineage_openlineage(lin)   # OpenLineage JSON: DataHub, Marquez, OpenMetadata
-lineage_diff(old, new)     # CI check: "this PR rewires gold.avg_mpg"
-```
-
-<br/>
-
-Lineage you can treat as **data**:
-
-document it, catalog it, gate pull requests on it.
-
-::: notes
-For the data engineers in the room: this speaks the standards their platform tools already ingest. R stops being the opaque box in the org's lineage graph.
-:::
-
 # Where we're going {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ## The whole paper trail, assembled
@@ -665,35 +657,42 @@ For the data engineers in the room: this speaks the standards their platform too
 | {ducklake} | *when / who / why* did tables change? | every write is an authored, versioned commit |
 | {dplyneage} | *where* did each column come from? | exact lineage from your dplyr code |
 
-<br/>
+::: {.fragment .quiet style="text-align: center; margin-top: .6em;"}
+And they compose: snapshots are a property of your *data*, lineage of your *code*.
 
-::: {.fragment .statement style="font-size: 1.05em;"}
+Time travel changes what the data was, never where it came from.
+:::
+
+::: {.fragment .statement style="font-size: 1.05em; margin-top: .4em;"}
 **Version everything. Explain everything. Never leave R.**
 :::
 
 ::: notes
-Bring the stem back: what changed, who, why is ducklake. Where every column came from is dplyneage. Same lazy tables, so they compose with zero glue.
+Bring the stem back: what changed, who, why is ducklake. Where every column came from is dplyneage. Same lazy tables, so they compose with zero glue. If asked how: query a past snapshot, extract lineage on it, same DAG; the June-submission audit answer in four lines (full demo in backup).
 :::
 
-## One more thing about time travel
+## The pattern, not the package {.center}
 
-Lineage is a property of your **code**; snapshots are a property of your **data**.
+Strip away the duck, and the recipe is small:
 
-```{r}
-#| eval: false
-get_ducklake_table_version("vehicles_clean", version = 2) |>
-  summarise(avg_mpg = mean(mpg)) |>
-  extract_lineage()   # same DAG as today
-```
+::: incremental
+- an open storage format anything can read
+- a catalog that remembers every version of every table
+- writes that land as commits: author, message, timestamp
+:::
 
-<br/>
+::: {.fragment style="text-align: center; margin-top: .5em;"}
+DuckLake is the road I took. Iceberg and Delta go to the same place.
+:::
 
-Time travel changes *what the data was*,
+::: {.fragment .statement style="font-size: 1.05em; margin-top: .4em;"}
+We made version control a habit for code.
 
-never *where it came from*. The paper trail survives the trip.
+**Data's turn.**
+:::
 
 ::: notes
-The kicker that ties both packages into one idea. Audit question: "for the June submission, what fed this estimate, in the data as of June?" Answer: both, in four lines.
+The big idea, said without the branding. This community made code versioning a norm: git, renv, CI. The ask is to extend that norm to data. If someone walks out and reaches for Iceberg instead of DuckLake, the talk still worked.
 :::
 
 ## Try it (bring a helmet)
@@ -746,4 +745,72 @@ Your data's future is whatever you make it.
 
 ::: notes
 Close on the Doc Brown paraphrase, slow and sincere. Slides and code at the repo. Thank you, and drive safely.
+:::
+
+# Backup {.divider visibility="uncounted"}
+
+## Lineage across the whole lake {visibility="uncounted"}
+
+```{r}
+#| output: false
+silver <- get_ducklake_table("vehicles_raw") |>
+  mutate(cyl = as.integer(cyl), heavy = wt > 3.5) |>
+  select(model, mpg, cyl, wt, heavy)
+
+gold <- get_ducklake_table("vehicles_clean") |>
+  left_join(get_ducklake_table("origins_raw"), by = "model") |>
+  group_by(origin) |>
+  summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n())
+
+lin_lake <- extract_lineage(
+  list(vehicles_clean = silver, efficiency_by_origin = gold))
+```
+
+::: notes
+Name your models in a list and the layers stitch: bronze through gold in one DAG. This is the dbt docs page experience, generated from the dplyr you already wrote.
+:::
+
+## {visibility="uncounted"}
+
+```{r}
+#| echo: false
+lineage_flow(lin_lake, height = "560px")
+```
+
+## And it travels beyond R {visibility="uncounted"}
+
+```{r}
+#| eval: false
+lineage_mermaid(lin)       # Mermaid text: renders on GitHub, in Quarto docs
+lineage_openlineage(lin)   # OpenLineage JSON: DataHub, Marquez, OpenMetadata
+lineage_diff(old, new)     # CI check: "this PR rewires gold.avg_mpg"
+```
+
+<br/>
+
+Lineage you can treat as **data**:
+
+document it, catalog it, gate pull requests on it.
+
+::: notes
+For the data engineers in the room: this speaks the standards their platform tools already ingest. R stops being the opaque box in the org's lineage graph.
+:::
+
+## Lineage × time travel {visibility="uncounted"}
+
+Lineage is a property of your **code**; snapshots are a property of your **data**.
+
+```{r}
+#| eval: false
+get_ducklake_table_version("vehicles_clean", version = 2) |>
+  summarise(avg_mpg = mean(mpg)) |>
+  extract_lineage()   # same DAG as today
+```
+
+<br/>
+
+The audit question this answers: "for the June submission, what fed this estimate, in the data as of June?" Both packages, four lines.
+
+::: notes
+Kept for Q&A. Time travel changes what the data was, never where it came from, so a past snapshot yields the same DAG as today for the same code.
 :::
