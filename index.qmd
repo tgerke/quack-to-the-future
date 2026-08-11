@@ -418,6 +418,26 @@ The question from the opening has an answer now: not a guess, the *rows*.
 The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
 :::
 
+## The same question, without a time machine {.center}
+
+**Duke, 2006.** A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work.
+
+When MD Anderson biostatisticians Keith Baggerly and Kevin Coombes tried to verify it, the forensic work ran to about **1,500 hours**. What they found: sensitive/resistant labels reversed, gene lists shifted off by one row.
+
+Three clinical trials ran on it before Duke shut them down. Ten papers retracted.
+
+::: {.statement style="font-size: 1em; margin-top: .6em;"}
+That is the price of a missing paper trail.
+:::
+
+::: {.quiet style="text-align: center; margin-top: .6em;"}
+Baggerly & Coombes (2009), *Annals of Applied Statistics*. Their data and code: still public, still reproducible.
+:::
+
+::: notes
+One serious beat, and the only slide in the deck with nothing funny on it; part of the room knows this case, so let the recognition land. Timeline if asked: Potti and Nevins published the predictors starting 2006 in Nature Medicine; MD Anderson clinicians asked Baggerly and Coombes to vet them before adopting; the reconstruction became the 2009 Annals of Applied Statistics paper; Duke's three trials were suspended, restarted, then terminated in November 2010 as the scandal broke and Potti resigned; Retraction Watch counts ten retractions plus seven corrections, and the federal Office of Research Integrity found misconduct in 2015. The honest claim, and the reason the slide sits right after the change-feed demo: versioning would not have caught the errors by itself. It makes the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries; detection stays human. Their full supplement (raw data, R code, reports) is still served by bioinformatics.mdanderson.org, which is what would make a replay of this case possible.
+:::
+
 ## Fixing the timeline
 
 ```{r}

@@ -49,21 +49,25 @@ every write an authored commit. Button: your data has a git log now.
 
 **Chapter II: drive the time machine.** Query any table as of any snapshot.
 Biff deletes 26 rows under the message "small tweak"; the change feed answers
-"what happened?" with the actual rows, not a guess; restore rolls forward so
-even the recovery is auditable; a pinned read-only snapshot is what a regulator
-can read. The PCCTC cameo lands the stakes here.
+"what happened?" with the actual rows, not a guess. Then the concrete example
+from session 1's feedback, one serious slide: the Duke chemo-predictor case,
+where verifying the data took two MD Anderson biostatisticians about 1,500
+hours by hand; with a paper trail, that archaeology is a query. Restore rolls
+forward so even the recovery is auditable; a pinned read-only snapshot is what
+a regulator can read. The PCCTC cameo lands the stakes here.
 
 **Chapter III: trace the flux capacitor.** SQL teams get column lineage
 from dbt and SQLMesh; dplyr had nothing. {dplyneage} walks the lazy query tree
 dbplyr already built: one pipe from an existing pipeline to a live DAG, plus
 impact analysis before you change the past. The almanac lesson.
 
-**Conclusion and call to action.** The two packages assembled against the stem,
-then the big idea said plainly on its own slide: strip away the duck and the
-recipe is an open format, a catalog, and authored writes. DuckLake is one road
-there. We made version control a habit for code; data's turn. CTA stays
-Monday-sized: take one pipeline you already own and put its tables in a lake
-with authored commits. Thirty minutes, reversible.
+**Conclusion and call to action** (1 slide). The whole close on one slide: the
+two packages against the stem, the recipe said plainly (an open format, a
+catalog, authored writes; DuckLake is one road there), and the button: we made
+version control a habit for code, data's turn. Install lines sit quiet at the
+bottom, and the Doc Brown sign-off is spoken over it. CTA stays Monday-sized:
+take one pipeline you already own and put its tables in a lake with authored
+commits. Thirty minutes, reversible.
 
 **Backup, after the close.** The whole-lake stitched DAG, the interchange
 formats (Mermaid, OpenLineage), and lineage x time travel. Cut from the main
@@ -95,7 +99,20 @@ line for focus, kept alive for Q&A.
   sits at 30 counted slides, down from 33.
 - Each chapter divider collapsed to one line: build the time machine, drive
   the time machine, trace the flux capacitor. The job verb moved into the
-  title, and the line beneath now summarizes the chapter in a sentence.
+  title, and the line beneath now summarizes the chapter in a sentence. The
+  titles are sized to hold a single line.
+- Every fragment click after the Part I divider is stripped so the deck flips
+  fast on the call; clicks can come back selectively later. The two setup
+  clicks (git contrast, lakehouse catch) stay.
+- The close collapsed from four slides to one: the table, the recipe, data's
+  turn, install lines. The roads image and OUTATIME plate live on in git
+  history.
+- Chapter II gained the concrete example from session 1's feedback: one
+  serious slide on the Duke chemo-predictor case, right after the change-feed
+  payoff. Figures verified (about 1,500 hours of forensic work, three
+  terminated trials, ten retractions), and MD Anderson still serves the full
+  data and code, so a companion replay is possible. Deck now sits at 28
+  counted slides.
 - The lakehouse slide dropped from five clicks to one. Its bullets reworded
   for accuracy (open files, almost always Parquet), the JVM line translated
   into Spark clusters and platform teams, and a quiet aside added: the
