@@ -139,7 +139,7 @@ For **data**, we do our best:
 :::
 
 ::: {style="text-align: center; margin-top: .5em;"}
-The discipline exists. [The obvious tool never did.]{.orange}
+We've had the discipline for years, [just not the tool]{.orange}.
 :::
 
 ::: {.fragment .statement style="font-size: 1.05em; margin-top: .7em;"}

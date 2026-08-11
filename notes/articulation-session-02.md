@@ -30,7 +30,7 @@ happened?" and you have absolutely no idea.
 1. We solved this once, for code. Two columns: for code, versioning is a
    reflex (commits, checkout, `git blame`); for data, we do our best (dated
    folders, `_v2` suffixes), but no author, no diff, no way back. The
-   discipline exists; the obvious tool never did. One click closes it:
+   discipline has been there for years, just not the tool. One click closes it:
    git-grade history for your data, without leaving R. The stem sentence is
    spoken here rather than printed; the bullets already carry what, who, and
    why.
@@ -88,7 +88,7 @@ line for focus, kept alive for Q&A.
   the printed stem came off (the bullets already say what, who, and why; the
   sentence is now spoken over the reveal), and the slide closes on one line,
   git-grade history for your data, without leaving R. "Overwrite and hope"
-  softened to "The discipline exists. The obvious tool never did." The deck
+  softened to "We've had the discipline for years, just not the tool." The deck
   sits at 30 counted slides, down from 33.
 - Each chapter divider now states its job on the slide: build it, drive it,
   trace it. The chapter names stay Back to the Future; the labels say what you
