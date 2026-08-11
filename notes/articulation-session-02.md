@@ -42,18 +42,18 @@ happened?" and you have absolutely no idea.
    Light aside: the session is called "From laptop to cluster," and this talk
    runs on the laptop. Ends on "here's the door."
 
-**Chapter I: the time machine** (build it). DuckDB already lives in your R
+**Chapter I: build the time machine.** DuckDB already lives in your R
 session; DuckLake makes the entire lakehouse a folder of Parquet plus a catalog
 you can query. Three lines to attach, a medallion pipeline in plain dplyr,
 every write an authored commit. Button: your data has a git log now.
 
-**Chapter II: time travel** (drive it). Query any table as of any snapshot.
+**Chapter II: drive the time machine.** Query any table as of any snapshot.
 Biff deletes 26 rows under the message "small tweak"; the change feed answers
 "what happened?" with the actual rows, not a guess; restore rolls forward so
 even the recovery is auditable; a pinned read-only snapshot is what a regulator
 can read. The PCCTC cameo lands the stakes here.
 
-**Chapter III: the flux capacitor** (trace it). SQL teams get column lineage
+**Chapter III: trace the flux capacitor.** SQL teams get column lineage
 from dbt and SQLMesh; dplyr had nothing. {dplyneage} walks the lazy query tree
 dbplyr already built: one pipe from an existing pipeline to a live DAG, plus
 impact analysis before you change the past. The almanac lesson.
@@ -93,9 +93,9 @@ line for focus, kept alive for Q&A.
   git-grade history for your data, without leaving R. "Overwrite and hope"
   softened to "We've had the discipline for years, just not the tool." The deck
   sits at 30 counted slides, down from 33.
-- Each chapter divider now states its job on the slide: build it, drive it,
-  trace it. The chapter names stay Back to the Future; the labels say what you
-  learn.
+- Each chapter divider collapsed to one line: build the time machine, drive
+  the time machine, trace the flux capacitor. The job verb moved into the
+  title, and the line beneath now summarizes the chapter in a sentence.
 - The lakehouse slide dropped from five clicks to one. Its bullets reworded
   for accuracy (open files, almost always Parquet), the JVM line translated
   into Spark clusters and platform teams, and a quiet aside added: the

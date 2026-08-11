@@ -173,7 +173,7 @@ The catch: built for Spark clusters, run by platform teams.
 
 **You don't need 1.21 gigawatts for this.**
 
-[This session is called "From laptop to cluster." Everything you're about to see runs on the laptop.]{.quiet}
+[Irony: This session is called "From laptop to cluster." Everything you're about to see runs on the laptop.]{.quiet}
 :::
 :::
 :::
@@ -182,7 +182,7 @@ The catch: built for Spark clusters, run by platform teams.
 Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. The recipe lands as one block; the single click brings the catch. If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop aside is real: this talk sits in a session called "From laptop to cluster," and everything in it runs locally; DuckDB reaches for a cluster only when the data outgrows one machine. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
 :::
 
-# Part I: the time machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Part I: build the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 <div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
 <div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
@@ -191,7 +191,7 @@ Audience calibration slide: most of the room has heard "lakehouse" but wouldn't 
 </div>
 
 ::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
-**Build it:** three lines of R to a lake where every write is an authored commit.
+Three lines of R to a lake where every write is an **authored commit**.
 :::
 
 ::: notes
@@ -350,10 +350,10 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 Pause and let them read; this output is real, generated when the deck rendered. This is the audit trail slide, and the button on chapter one: the lake exists and it remembers. Chapter two is what the remembering buys you.
 :::
 
-# Part II: time travel {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Part II: drive the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
-The lake remembers everything. **Drive it:** query the past, see exactly what changed, undo mistakes.
+The lake remembers everything: query the past, see **exactly what changed**, undo&nbsp;mistakes.
 :::
 
 ::: notes
@@ -494,7 +494,7 @@ and your head does not survive job changes.
 The turn into chapter three. Snapshots answer what changed, who, and why. The stem has one clause left: where every column came from. Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
 :::
 
-# Part III: the flux capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Part III: trace the flux&nbsp;capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: columns
 ::: {.column width="45%"}
@@ -508,7 +508,7 @@ The Y-shaped diagram in Doc's car?
 
 [{dplyneage}: column-level lineage for dplyr pipelines]{.cyan}
 
-[**Trace it:** follow every column to its source, and know what breaks before you change the past.]{style="font-size: .85em; color: #c0c5ce;"}
+[Follow every column to its source, and know what breaks **before** you change the past.]{style="font-size: .85em; color: #c0c5ce;"}
 :::
 :::
 
