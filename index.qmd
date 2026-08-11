@@ -142,12 +142,16 @@ For **data**, we do our best:
 We've had the discipline for years, [just not the tool]{.orange}.
 :::
 
-::: {.fragment .statement style="font-size: 1.05em; margin-top: .7em;"}
+::: {.quiet style="text-align: center; margin-top: .8em;"}
+That tool has one job:
+:::
+
+::: {.statement style="font-size: 1.05em; margin-top: 0;"}
 **Git-grade history** for your data, *without leaving R*.
 :::
 
 ::: notes
-Everything is visible on arrival except the last line; one click brings it in. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. Say the stem over the reveal instead of showing it: data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. That sentence is the spine of the talk: what, who, why is chapters one and two; where every column came from is chapter three; and "paper trail" pays off at the Part III turn and the summary slide.
+No clicks here; the whole argument is on the slide. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. Land on the last line and say the stem out loud: data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. That sentence is the spine of the talk: what, who, why is chapters one and two; where every column came from is chapter three; and "paper trail" pays off at the Part III turn and the summary slide.
 :::
 
 ## The lakehouse, in one slide

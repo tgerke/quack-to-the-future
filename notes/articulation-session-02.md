@@ -30,10 +30,10 @@ happened?" and you have absolutely no idea.
 1. We solved this once, for code. Two columns: for code, versioning is a
    reflex (commits, checkout, `git blame`); for data, we do our best (dated
    folders, `_v2` suffixes), but no author, no diff, no way back. The
-   discipline has been there for years, just not the tool. One click closes it:
-   git-grade history for your data, without leaving R. The stem sentence is
-   spoken here rather than printed; the bullets already carry what, who, and
-   why.
+   discipline has been there for years, just not the tool. No clicks; the
+   slide closes on the missing tool's one job: git-grade history for your
+   data, without leaving R. The stem sentence is spoken here rather than
+   printed; the bullets already carry what, who, and why.
 2. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
    Iceberg and Delta solved this years ago behind a JVM and a platform team;
    this room was priced out of the solution, not the problem. Ends on "here's
