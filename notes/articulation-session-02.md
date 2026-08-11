@@ -35,10 +35,12 @@ happened?" and you have absolutely no idea.
    mine is git-grade history for your data, without leaving R. The stem
    sentence is spoken here rather than printed; the bullets already carry
    what, who, and why.
-2. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
-   Iceberg and Delta solved this years ago behind a JVM and a platform team;
-   this room was priced out of the solution, not the problem. Ends on "here's
-   the door."
+2. The lakehouse in one slide: open files (almost always Parquet) + a catalog
+   + transactional writes, shown as one block; a single click brings the
+   catch. Iceberg and Delta solved this years ago for Spark clusters with
+   platform teams; this room was priced out of the solution, not the problem.
+   Light aside: the session is called "From laptop to cluster," and this talk
+   runs on the laptop. Ends on "here's the door."
 
 **Chapter I: the time machine** (build it). DuckDB already lives in your R
 session; DuckLake makes the entire lakehouse a folder of Parquet plus a catalog
@@ -94,6 +96,11 @@ line for focus, kept alive for Q&A.
 - Each chapter divider now states its job on the slide: build it, drive it,
   trace it. The chapter names stay Back to the Future; the labels say what you
   learn.
+- The lakehouse slide dropped from five clicks to one. Its bullets reworded
+  for accuracy (open files, almost always Parquet), the JVM line translated
+  into Spark clusters and platform teams, and a quiet aside added: the
+  session title promises "laptop to cluster," and this talk runs on the
+  laptop.
 
 ## Chapter jobs in one line each, if they ask
 

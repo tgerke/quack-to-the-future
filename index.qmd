@@ -78,7 +78,7 @@ theme_bttf <- ggplot2::theme(
 :::
 
 ::: notes
-Don't rush this one. "Hi, I'm Travis. I lead data science at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel." Beat. "For your data."
+"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data."
 :::
 
 # The problem {.divider visibility="hidden"}
@@ -144,7 +144,7 @@ We've had the discipline for years, [just not the tool]{.orange}.
 :::
 
 ::: {.quiet style="text-align: center; margin-top: .8em;"}
-There's more than one way to do it. Here's mine:
+In this talk, we'll see how to produce:
 :::
 
 ::: {.statement style="font-size: 1.05em; margin-top: 0;"}
@@ -158,12 +158,10 @@ One click: the two columns land first, then the whole bottom block arrives toget
 
 ## The lakehouse, in one slide
 
-::: incremental
-- Your tables live as **Parquet files** (cheap, open, columnar)
+- Your tables live as **open files**, almost always Parquet (cheap, columnar)
 - A **catalog** tracks which files make up each table, at each version
 - Writes are **transactions**: atomic, versioned, never in a half-state
 - This is what Iceberg and Delta Lake do for the Spark world
-:::
 
 ::: {.fragment style="text-align: center; margin-top: .6em;"}
 ::: columns
@@ -171,15 +169,17 @@ One click: the two columns land first, then the whole bottom block arrives toget
 ![](images/stills/great-scott.webp){width="420"}
 :::
 ::: {.column style="width: 45%; text-align: left;"}
-The catch: that world assumes a JVM, a cluster, and a platform team.
+The catch: built for Spark clusters, run by platform teams.
 
 **You don't need 1.21 gigawatts for this.**
+
+[This session is called "From laptop to cluster." Everything you're about to see runs on the laptop.]{.quiet}
 :::
 :::
 :::
 
 ::: notes
-Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. Three bullets is the whole concept. The joke lands the real claim: the architecture is good, the infrastructure tax was the problem. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
+Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. The recipe lands as one block; the single click brings the catch. If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop aside is real: this talk sits in a session called "From laptop to cluster," and everything in it runs locally; DuckDB reaches for a cluster only when the data outgrows one machine. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
 :::
 
 # Part I: the time machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -223,7 +223,7 @@ A DuckDB extension where the **entire lakehouse** is:
 1. Parquet files in a folder (or S3)
 2. A plain SQL database as the catalog (DuckDB, SQLite, or Postgres)
 
-That's it. No JVM, no manifest files, no Zookeeper sacrifice.
+That's it. No cluster, no platform team, no Zookeeper sacrifice.
 
 ::: {.fragment}
 [Same pattern as Iceberg and Delta, at a scale one person can own.]{.quiet}
