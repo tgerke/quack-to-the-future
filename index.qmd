@@ -223,7 +223,7 @@ A DuckDB extension where the **entire lakehouse** is:
 1. Parquet files in a folder (or S3)
 2. A plain SQL database as the catalog (DuckDB, SQLite, or Postgres)
 
-That's it. No cluster, no platform team, no Zookeeper sacrifice.
+That's it. No cluster, no platform team.
 
 ::: {.fragment}
 [Same pattern as Iceberg and Delta, at a scale one person can own.]{.quiet}
