@@ -19,19 +19,21 @@ The stem sentence carries over from session 1:
 
 ## The outline
 
-**Hook** (1 slide). The whole cold open on one slide, straight off the title:
-the FINAL_v2 filename pileup beside the fading Polaroid. The folder gets the
-laugh. Click: the photo fades, history quietly erasing itself. Click: the
-question, "hey, this number changed since the last version, what happened?"
-and you have absolutely no idea. Click: the ask, on the slide in minute one:
-version the data like you version the code.
+**Hook** (1 slide, no clicks). The whole cold open on one slide, straight off
+the title: the FINAL_v2 filename pileup beside the Polaroid. The folder gets
+the laugh; about two seconds in, the photo fades on its own while the question
+rises beneath it: "hey, this number changed since the last version, what
+happened?" and you have absolutely no idea.
 
-**Setup** (3 slides).
+**Setup** (2 slides).
 
-1. We solved this once, for code. Commits, checkouts, `git blame`; the
-   pipeline's output gets none of it. The hook's ask, made mechanical.
-2. The stem slide.
-3. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
+1. We solved this once, for code. Two columns: for code, versioning is a
+   reflex (commits, checkout, `git blame`); for data, we do our best (dated
+   folders, `_v2` suffixes), but no author, no diff, no way back. The
+   discipline is real; the tooling never showed up. One click brings in the
+   stem: data pipelines need a paper trail, what changed, who, why, and where
+   every column came from. That's the whole talk.
+2. The lakehouse in one slide: Parquet + a catalog + transactional snapshots.
    Iceberg and Delta solved this years ago behind a JVM and a platform team;
    this room was priced out of the solution, not the problem. Ends on "here's
    the door."
@@ -76,11 +78,15 @@ line for focus, kept alive for Q&A.
 - The cut list from session 1 executed as written: interchange formats and the
   whole-lake DAG moved to backup, and the "one more thing" kicker collapsed to
   one line on the summary slide.
-- The opening compressed for time. The postcard now leads as the hook, and the
-  changed-number question and the FINAL_v2 pileup fold onto that same slide:
-  one cold open with three clicks instead of three slides. The strongest
-  visual goes first, and the norm ask is spoken in minute one. The deck drops
-  from 33 to 31 counted slides.
+- The opening compressed for time. The postcard now leads as the hook, with
+  the changed-number question and the FINAL_v2 pileup folded onto that same
+  slide. No clicks: the photo fades on its own about two seconds after the
+  slide appears, and the question fades in beneath it. The "version the data"
+  ask came off the slide; the stem and the close still say it.
+- Setup tightened to two slides. The git contrast and the stem merged into
+  one (the stem arrives on a single click), and "overwrite and hope" softened:
+  dated folders and `_v2` suffixes are real discipline, the missing piece is
+  tooling. The deck now sits at 30 counted slides, down from 33.
 - Each chapter divider now states its job on the slide: build it, drive it,
   trace it. The chapter names stay Back to the Future; the labels say what you
   learn.

@@ -103,63 +103,59 @@ analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
 
 ::: {.column style="width: 50%; text-align: center;"}
 <div class="polaroid">
-<img src="images/stills/fading-photo.webp" class="no-round fragment custom fade-history" style="width: 440px;" alt="Marty's fading family photograph"/>
+<img src="images/stills/fading-photo.webp" class="no-round auto-fade-out" style="width: 440px;" alt="Marty's fading family photograph"/>
 </div>
 :::
 :::
 
-::: {.fragment style="text-align: center; margin-top: .4em;"}
+::: {.auto-fade-in style="text-align: center; margin-top: .4em;"}
 "Hey, this number **changed** since the last version. What happened?"
 
 [You have absolutely no idea. Somewhere in the past, the timeline **skewed**.]{.quiet}
 :::
 
-::: {.fragment style="text-align: center; margin-top: .3em;"}
-[Version the data like you version the code.]{.orange}
-:::
-
 ::: notes
-The whole cold open on one slide. The folder gets the laugh: filenames are our version control, Slack is our audit log, memory is our lineage system. Click: the photo fades. Every overwrite of an existing file is Marty's siblings disappearing; the present looks fine, and what the data looked like, who changed it, and why are quietly erased. Click: the question everyone in the room has been asked, and the honest answer. This is Marty's alternate 1985: someone changed your data upstream, and you're living in the wrong timeline of your own report; pays off at the change-feed and almanac slides. Click: the ask, out loud in minute one. Next slide: the fix is already in this room's muscle memory.
+The whole cold open, no clicks. Land here and get the laugh on the folder: filenames are our version control, Slack is our audit log, memory is our lineage system. About two seconds in, the photo starts fading on its own while the question rises beneath it; every overwrite of an existing file is Marty's siblings disappearing, and what the data looked like, who changed it, and why quietly erase. The question is Marty's alternate 1985: someone changed your data upstream, and you can't see where the timeline forked; pays off at the change-feed and almanac slides. Next slide: the fix is already in this room's muscle memory.
 :::
 
 ## We solved this once, for code {.center}
 
-For **code**, this room treats version control as a given:
+::: {.columns style="font-size: .9em;"}
+::: {.column style="width: 50%;"}
+For **code**, versioning is a reflex:
 
-::: incremental
-- every change is a commit, with an author and a message
+- every change is a commit: author, message, diff
 - any past state is one checkout away
-- "who changed this, and why?" has a command: `git blame`
+- "who changed this, and why?" is `git blame`
 :::
 
-::: {.fragment style="text-align: center; margin-top: .6em;"}
-The data your pipelines produce gets none of that.
+::: {.column style="width: 50%;"}
+For **data**, we do our best:
 
-[Overwrite and hope.]{.orange}
+- dated folders, `_v2` suffixes
+- careful names, good intentions
+- but no author, no diff, no way back
+:::
 :::
 
-::: notes
-The hook named the double standard; this slide makes it mechanical. Commits, checkouts, and blame on one side; the pipeline's output landing in a CSV with no history on the other. Nobody chose that on purpose; the tooling made one easy and the other hard.
+::: {style="text-align: center; margin-top: .5em;"}
+The discipline is real. [The tooling never showed up.]{.orange}
 :::
 
-## {.center}
-
-::: {.statement}
+::: {.fragment}
+::: {.statement style="font-size: 1.05em; margin-top: .6em;"}
 Data pipelines need a **paper trail**:
 
-what changed, *who* changed it, *why*,
-
-and where every column **came from**.
+what changed, *who* changed it, *why*, and where every column **came from**.
 :::
-
-<br/>
 
 ::: {.quiet style="text-align: center;"}
 That's the whole talk: git-grade history for your data, without leaving R.
 :::
+:::
 
 ::: notes
-The governing idea, the "stem." Say it slowly. Everything in the next 18 minutes hangs off this sentence.
+Everything is visible on arrival except the stem; one click brings that in. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. The gap was never carelessness; the tooling never showed up for data. Then the stem, slowly: everything in the next 18 minutes hangs off this sentence. What changed, who, why is chapters one and two; where every column came from is chapter three.
 :::
 
 ## The lakehouse, in one slide
