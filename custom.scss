@@ -179,7 +179,9 @@ $code-block-border-color: #262b47;
   .cyan { color: $plasma; }
 
   // ---- Section dividers -------------------------------------------------------
-  section.divider h1 { font-size: 1.7em; }
+  // .slides outranks Quarto's [data-navigation-mode] .title-slide h1 rule (2.5em),
+  // which otherwise wins the cascade; 1.95em keeps the longest chapter title on one line
+  .slides section.divider h1 { font-size: 1.95em; }
 
   // ---- Fire trails (title flourish) ---------------------------------------------
   .fire-trails {
