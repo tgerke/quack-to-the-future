@@ -206,7 +206,7 @@ Act break, chapter one: build the machine. Two quick intros (the engine, then th
 - Queries Parquet/CSV directly, scales past memory
 - dbplyr speaks fluent DuckDB: your dplyr code *is* the SQL
 
-::: {.fragment style="text-align: center;"}
+::: {style="text-align: center;"}
 [It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it.]{.orange}
 :::
 
@@ -225,9 +225,7 @@ A DuckDB extension where the **entire lakehouse** is:
 
 That's it. No cluster, no platform team.
 
-::: {.fragment}
 [Same pattern as Iceberg and Delta, at a scale one person can own.]{.quiet}
-:::
 :::
 
 ::: {.column width="50%"}
@@ -296,11 +294,9 @@ with_transaction({
 
 <br/>
 
-::: incremental
 - The write is **atomic**: both tables or neither
 - It's recorded with an **author** and a **commit message**
 - Sound familiar? It's a `git commit` for your data.
-:::
 
 ::: notes
 The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached.
@@ -310,7 +306,6 @@ The signature ducklake API move: the transaction wrapper is where who-and-why ge
 
 ```{r}
 #| output: false
-#| code-line-numbers: "2-5|8-12"
 with_transaction(
   get_ducklake_table("vehicles_raw") |>
     mutate(cyl = as.integer(cyl), heavy = wt > 3.5) |>
@@ -342,7 +337,7 @@ list_table_snapshots() |>
 
 <br/>
 
-::: {.fragment .statement style="font-size: 1em;"}
+::: {.statement style="font-size: 1em;"}
 Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
@@ -363,7 +358,6 @@ Act break, chapter two: use the machine. Reading history, surviving Biff, and pr
 ## Time travel {.center}
 
 ```{r}
-#| output-location: fragment
 get_ducklake_table_version("vehicles_clean", version = 2) |>
   head(3) |>
   collect()
@@ -395,9 +389,7 @@ with_transaction(
 get_ducklake_table("vehicles_clean") |> tally() |> collect()
 ```
 
-::: {.fragment}
 32 rows → 6 rows, on a Friday afternoon, labeled **"small tweak."**
-:::
 
 ::: notes
 Every team has a Biff. Sometimes Biff is you, at 4:47 PM. You can't prevent the mistake; you can make it visible, attributed, and reversible.
@@ -406,7 +398,6 @@ Every team has a Biff. Sometimes Biff is you, at 4:47 PM. You can't prevent the 
 ## "What happened?" is now a query
 
 ```{r}
-#| output-location: fragment
 get_table_changes("vehicles_clean", start = 4, end = 4) |>
   select(change_type, model, mpg) |>
   head(3) |>
@@ -419,11 +410,9 @@ n_biff_deleted <- get_table_changes("vehicles_clean", start = 4, end = 4) |>
   filter(change_type == "delete") |> tally() |> collect() |> pull(n)
 ```
 
-::: {.fragment}
 All `r n_biff_deleted` deleted rows, with the values they had **before** Biff touched them.
 
 The question from the opening has an answer now: not a guess, the *rows*.
-:::
 
 ::: notes
 The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
@@ -436,11 +425,9 @@ restore_table_version("vehicles_clean", version = 2)
 get_ducklake_table("vehicles_clean") |> tally() |> collect()
 ```
 
-::: {.fragment}
 Restore rolls **forward** as a *new* snapshot: Biff's mistake stays in the log.
 
 You fix the timeline **without erasing anyone from the photo**.
-:::
 
 ::: notes
 Callback to the Polaroid. Contrast with the flat-file world, where the fix is overwriting the overwrite and praying. History is append-only; even the recovery is auditable.
@@ -484,11 +471,9 @@ SQL teams already get **column-level lineage** from tools like dbt and SQLMesh:
 
 <br/>
 
-::: {.fragment}
 For **dplyr pipelines**? Nothing. The lineage lives in your head,
 
 and your head does not survive job changes.
-:::
 
 ::: notes
 The turn into chapter three. Snapshots answer what changed, who, and why. The stem has one clause left: where every column came from. Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
@@ -559,16 +544,14 @@ The money demo. Take any dplyr pipeline you already have, pipe it into two more 
 
 How does it know?
 
-::: incremental
 - Your dplyr pipeline is already a **lazy query tree** (thanks, dbplyr)
 - {dplyneage} walks that tree directly, in **pure R**, with exact attribution
 - Joins, aggregations, windows, unions: resolved to true source columns
 - Raw SQL strings? A sqlglot fallback handles those (Python optional)
-:::
 
 <br/>
 
-::: {.fragment .quiet style="text-align: center;"}
+::: {.quiet style="text-align: center;"}
 No parsing your SQL with regex. No YAML confessional. No Python required.
 :::
 
@@ -593,9 +576,7 @@ lineage_upstream(lin, "output.avg_mpg")         # where did this come from?
 
 ::: columns
 ::: {.column width="60%"}
-::: {.fragment}
 Impact analysis as a function call: know what a change touches **before** you make it.
-:::
 :::
 ::: {.column width="40%"}
 ![](images/stills/almanac.webp){width="340"}
@@ -608,101 +589,25 @@ The almanac lesson: changing upstream data without knowing the downstream conseq
 
 # Where we're going {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
-## The whole paper trail, assembled
+## The whole paper trail, assembled {.center}
 
 |  | question | answer |
 |---|---|---|
 | {ducklake} | *when / who / why* did tables change? | every write is an authored, versioned commit |
 | {dplyneage} | *where* did each column come from? | exact lineage from your dplyr code |
 
-::: {.fragment .quiet style="text-align: center; margin-top: .6em;"}
-And they compose: snapshots are a property of your *data*, lineage of your *code*.
+Strip away the duck and the recipe is small: an **open format**, a **catalog**, and writes that land as **commits**. DuckLake is the road I took; Iceberg and Delta go to the same place.
 
-Time travel changes what the data was, never where it came from.
+::: {.statement style="font-size: 1.05em; margin-top: .5em;"}
+We made version control a habit for code. **Data's turn.**
 :::
 
-::: {.fragment .statement style="font-size: 1.05em; margin-top: .4em;"}
-**Version everything. Explain everything. Never leave R.**
-:::
-
-::: notes
-Bring the stem back: what changed, who, why is ducklake. Where every column came from is dplyneage. Same lazy tables, so they compose with zero glue. If asked how: query a past snapshot, extract lineage on it, same DAG; the June-submission audit answer in four lines (full demo in backup).
-:::
-
-## The pattern, not the package {.center}
-
-Strip away the duck, and the recipe is small:
-
-::: incremental
-- an open storage format anything can read
-- a catalog that remembers every version of every table
-- writes that land as commits: author, message, timestamp
-:::
-
-::: {.fragment style="text-align: center; margin-top: .5em;"}
-DuckLake is the road I took. Iceberg and Delta go to the same place.
-:::
-
-::: {.fragment .statement style="font-size: 1.05em; margin-top: .4em;"}
-We made version control a habit for code.
-
-**Data's turn.**
+::: {.quiet style="text-align: center; margin-top: .7em; font-family: 'Fira Code', monospace;"}
+`pak::pak("tgerke/ducklake-r")` · `pak::pak("tgerke/dplyneage")`<br/>github.com/tgerke/quack-to-the-future
 :::
 
 ::: notes
-The big idea, said without the branding. This community made code versioning a norm: git, renv, CI. The ask is to extend that norm to data. If someone walks out and reaches for Iceberg instead of DuckLake, the talk still worked.
-:::
-
-## Try it (bring a helmet)
-
-::: columns
-::: {.column width="60%"}
-```{r}
-#| eval: false
-pak::pak("tgerke/ducklake-r")   # CRAN submission in review
-pak::pak("tgerke/dplyneage")    # v0.2.0 on GitHub
-```
-
-- [tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r)
-- [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)
-- DuckLake itself: [ducklake.select](https://ducklake.select)
-
-Both are young. File issues; timeline corrections welcome.
-:::
-
-::: {.column style="width: 40%; text-align: center;"}
-<br/>
-<div class="outatime-plate" style="font-size: 2.2em;">
-<span class="plate-state">CALIFORNIA</span>
-OUTATIME
-<span class="plate-state">THE GOLDEN STATE</span>
-</div>
-<br/>
-[the only error this stack can't fix]{.quiet}
-:::
-:::
-
-::: notes
-Honest maturity slide: both packages carry experimental lifecycle badges. dplyneage 0.2.0 tagged on GitHub July 2026; ducklake's CRAN submission is in review, and v0.4.1 is archived on Zenodo with a DOI if anyone wants to cite it. Early adopters welcome; the APIs shown today are the stable core.
-:::
-
-## {.center background-image="images/stills/roads.webp" background-size="cover" background-opacity="0.35"}
-
-::: {.statement style="font-size: 1.3em;"}
-Your data's future is whatever you make it.
-
-**So make it a good one.**
-:::
-
-<br/>
-
-::: {style="text-align: center;"}
-[Travis Gerke · PCCTC]{style="color: #c0c5ce;"} <br/>
-[github.com/tgerke/quack-to-the-future]{.cyan style="font-family: 'Fira Code', monospace; font-size: .6em;"}
-:::
-
-::: notes
-Close on the Doc Brown paraphrase, slow and sincere. Slides and code at the repo. Thank you, and drive safely.
+The whole close on one slide. Bring the stem back: what changed, who, why is ducklake; where every column came from is dplyneage. They compose because both are lazy tables: query a past snapshot, extract lineage on it, same DAG (full demo in backup). Then the big idea without the branding: this community made code versioning a norm, and the ask is to extend that norm to data. If someone walks out and reaches for Iceberg instead of DuckLake, the talk still worked. CTA stays Monday-sized: take one pipeline you already own and put its tables in a lake with authored commits. Thirty minutes, reversible. Maturity if asked: experimental lifecycle badges on both; ducklake's CRAN submission in review, v0.4.1 archived on Zenodo with a DOI; dplyneage 0.2.0 tagged on GitHub; docs at tgerke.github.io/ducklake-r and tgerke.github.io/dplyneage. Spoken sign-off over this slide, slow and sincere: your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
 :::
 
 # Backup {.divider visibility="uncounted"}
