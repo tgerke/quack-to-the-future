@@ -66,7 +66,7 @@ theme_bttf <- ggplot2::theme(
 
 <div class="fire-trails"></div>
 
-[Building traceable data lakehouses with DuckLake in R]{style="font-size: .75em; color: #c0c5ce;"}
+[Building traceable data lakehouses with DuckLake in R, <span style="color: #8a90ad;">on one laptop</span>]{style="font-size: .75em; color: #c0c5ce;"}
 
 <br/>
 
@@ -78,7 +78,7 @@ theme_bttf <- ggplot2::theme(
 :::
 
 ::: notes
-"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data."
+"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data." Don't explain "on one laptop." Anyone who read the session title in the program gets it, and pointing at it kills it. Two numbers if it comes up in Q&A: the median scan in Redshift and Snowflake reads about 100 MB and the 99.9th percentile reads under 300 GB, and the cheapest MacBook Apple sells finished all of ClickBench cold in under a minute, up to 2.8 times faster than the cloud instances it was measured against. Full number bank is on the lakehouse slide.
 :::
 
 # The problem {.divider visibility="hidden"}
@@ -138,22 +138,12 @@ For **data**, we do our best:
 :::
 :::
 
-::: {.fragment}
-::: {style="text-align: center; margin-top: .5em;"}
-We've had the discipline for years, [just not the tool]{.orange}.
-:::
-
-::: {.quiet style="text-align: center; margin-top: .8em;"}
-In this talk, we'll see how to produce:
-:::
-
-::: {.statement style="font-size: 1.05em; margin-top: 0;"}
+::: {.fragment .statement style="text-align: center; margin-top: .5em; font-size: 1.05em;"}
 **Git-grade history** for your data, *without leaving R*.
-:::
 :::
 
 ::: notes
-One click: the two columns land first, then the whole bottom block arrives together. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. "More than one way" does the tool-agnostic work early; the next slide names Iceberg and Delta, and the close returns to it. Land on the last line and say the stem out loud: data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. That sentence is the spine of the talk: what, who, why is chapters one and two; where every column came from is chapter three; and "paper trail" pays off at the Part III turn and the summary slide.
+One click: the two columns land first, then the whole bottom block arrives together. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. "More than one way" does the tool-agnostic work early; the next slide names Iceberg and Delta, and the close returns to it. Land on the last line and say the stem out loud: data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. That sentence is the spine of the talk: what, who, why is chapters one and two; where every column came from is chapter three; and "paper trail" pays off at the Trip III turn and the summary slide.
 :::
 
 ## The lakehouse, in one slide
@@ -172,17 +162,17 @@ One click: the two columns land first, then the whole bottom block arrives toget
 The catch: built for Spark clusters, run by platform teams.
 
 **You don't need 1.21 gigawatts for this.**
-
-[Irony: This session is called "From laptop to cluster." Everything you're about to see runs on the laptop.]{.quiet}
 :::
 :::
 :::
 
 ::: notes
-Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. The recipe lands as one block; the single click brings the catch. If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop aside is real: this talk sits in a session called "From laptop to cluster," and everything in it runs locally; DuckDB reaches for a cluster only when the data outgrows one machine. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
+Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. The recipe lands as one block; the single click brings the catch. If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop line lives on the title slide now, so don't say it again here; DuckDB reaches for a cluster only when the data outgrows one machine. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
+
+If pressed on scale. The Iceberg catalog tier alone: Apache Polaris ships production Helm values of 4 CPU and 8 GiB per pod at three replicas, plus its own Postgres, and the in-memory default is documented as unfit for production. The older Hive Metastore path is no lighter, with Cloudera calling the 256 MB default heap inadequate, HiveServer2 starting at 4 GB, and a 16 GB cap per instance because garbage collection pauses get long. A Spark or Trino cluster sits on top of that. The read path costs you too: three layers of metadata files read in sequence at roughly 100 ms a request, so half a second passes before you know which Parquet files to open. DuckLake asks one SQL question and gets one answer in milliseconds. Writes go the same way, about one transaction per second for Iceberg and Delta against roughly 100 for DuckLake, and Postgres alone sustains thousands. Every Iceberg insert also lands three or four files, which is how small-file cleanup becomes someone's job. On whether one machine holds: the cheapest MacBook, 8 GB of RAM with DuckDB capped at 5, ran all of ClickBench cold in 59.7 seconds, up to 2.8 times faster than the cloud instances it was measured against, and hot it came within 13 percent of a 16-vCPU box with four times the memory. TPC-DS SF100 on that same laptop: 1.63 second median, 15.5 minutes for the suite. A Galaxy S24 Ultra finished TPC-H SF100 over 30 GB in 235 seconds while an AWS r6id.large took 570.8. A 2012 MacBook Pro cleared all 22 TPC-H queries against a 265 GB database. Demand side: the median scan in Redshift and Snowflake reads about 100 MB, the 99.9th percentile under 300 GB.
 :::
 
-# Part I: build the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Trip I: build the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 <div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
 <div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
@@ -345,7 +335,7 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 Pause and let them read; this output is real, generated when the deck rendered. This is the audit trail slide, and the button on chapter one: the lake exists and it remembers. Chapter two is what the remembering buys you.
 :::
 
-# Part II: drive the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Trip II: drive the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
 The lake remembers everything: query the past, see **exactly what changed**, undo&nbsp;mistakes.
@@ -499,7 +489,7 @@ and your head does not survive job changes.
 The turn into chapter three. Snapshots answer what changed, who, and why. The stem has one clause left: where every column came from. Names dbt/SQLMesh for the audience members who know them ("oh, it's THAT") and defines lineage for everyone else with one concrete example sentence.
 :::
 
-# Part III: trace the flux&nbsp;capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+# Trip III: trace the flux&nbsp;capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
 
 ::: columns
 ::: {.column width="45%"}
