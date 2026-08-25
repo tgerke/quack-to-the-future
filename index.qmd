@@ -66,7 +66,7 @@ theme_bttf <- ggplot2::theme(
 
 <div class="fire-trails"></div>
 
-[Building traceable data lakehouses with DuckLake in R, <span style="color: #8a90ad;">on one laptop</span>]{style="font-size: .75em; color: #c0c5ce;"}
+[Building traceable data lakehouses with DuckLake in R, <span style="color: #8a90ad;">on a laptop</span>]{style="font-size: .75em; color: #c0c5ce;"}
 
 <br/>
 
@@ -78,7 +78,7 @@ theme_bttf <- ggplot2::theme(
 :::
 
 ::: notes
-"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data." Don't explain "on one laptop." Anyone who read the session title in the program gets it, and pointing at it kills it. Two numbers if it comes up in Q&A: the median scan in Redshift and Snowflake reads about 100 MB and the 99.9th percentile reads under 300 GB, and the cheapest MacBook Apple sells finished all of ClickBench cold in under a minute, up to 2.8 times faster than the cloud instances it was measured against. Full number bank is on the lakehouse slide.
+"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data." Ironically, although this session is called from laptop to cluster, I'm going to describe a lake house approach which in many cases can enable the reverse: going from cluster to laptop. Two numbers if it comes up in Q&A: the median scan in Redshift and Snowflake reads about 100 MB and the 99.9th percentile reads under 300 GB, and the cheapest MacBook Apple sells finished all of ClickBench cold in under a minute, up to 2.8 times faster than the cloud instances it was measured against. Full number bank is on the lakehouse slide.
 :::
 
 # The problem {.divider visibility="hidden"}
@@ -115,7 +115,7 @@ analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
 :::
 
 ::: notes
-The whole cold open, no clicks. Land here and get the laugh on the folder: filenames are our version control, Slack is our audit log, memory is our lineage system. About two seconds in, the photo starts fading on its own while the question rises beneath it; every overwrite of an existing file is Marty's siblings disappearing, and what the data looked like, who changed it, and why quietly erase. The question is Marty's alternate 1985: someone changed your data upstream, and you can't see where the timeline forked; pays off at the change-feed and almanac slides. Next slide: the fix is already in this room's muscle memory.
+This data setup may look familiar to many of you: filenames are our version control, Slack is our audit log, memory is our lineage system. Every overwrite of an existing file is Marty's siblings disappearing, and what the data looked like, who changed it, and why quietly erase. The question is Marty's alternate 1985: someone changed your data upstream, and you can't see where the timeline forked; pays off at the change-feed and almanac slides.
 :::
 
 ## We solved this once, for code {.center}
@@ -134,7 +134,7 @@ For **data**, we do our best:
 
 - dated folders, `_v2` suffixes
 - careful names, good intentions
-- but no author, no diff, no way back
+- but no author or diff, no way back
 :::
 :::
 
@@ -143,7 +143,7 @@ For **data**, we do our best:
 :::
 
 ::: notes
-One click: the two columns land first, then the whole bottom block arrives together. Left column is the room's reflex: git, renv, CI on every push. Right column names the real practice with respect: ISO-dated folders and suffixes are discipline, but there's no author, no diff, no rollback. "More than one way" does the tool-agnostic work early; the next slide names Iceberg and Delta, and the close returns to it. Land on the last line and say the stem out loud: data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. That sentence is the spine of the talk: what, who, why is chapters one and two; where every column came from is chapter three; and "paper trail" pays off at the Trip III turn and the summary slide.
+Data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. 
 :::
 
 ## The lakehouse, in one slide
@@ -167,7 +167,7 @@ The catch: built for Spark clusters, run by platform teams.
 :::
 
 ::: notes
-Audience calibration slide: most of the room has heard "lakehouse" but wouldn't define it. The recipe lands as one block; the single click brings the catch. If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop line lives on the title slide now, so don't say it again here; DuckDB reaches for a cluster only when the data outgrows one machine. Setup ends here: the pattern exists, this room was priced out of it, and the next three chapters are the door.
+If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop line lives on the title slide now, so don't say it again here; DuckDB reaches for a cluster only when the data outgrows one machine.
 
 If pressed on scale. The Iceberg catalog tier alone: Apache Polaris ships production Helm values of 4 CPU and 8 GiB per pod at three replicas, plus its own Postgres, and the in-memory default is documented as unfit for production. The older Hive Metastore path is no lighter, with Cloudera calling the 256 MB default heap inadequate, HiveServer2 starting at 4 GB, and a 16 GB cap per instance because garbage collection pauses get long. A Spark or Trino cluster sits on top of that. The read path costs you too: three layers of metadata files read in sequence at roughly 100 ms a request, so half a second passes before you know which Parquet files to open. DuckLake asks one SQL question and gets one answer in milliseconds. Writes go the same way, about one transaction per second for Iceberg and Delta against roughly 100 for DuckLake, and Postgres alone sustains thousands. Every Iceberg insert also lands three or four files, which is how small-file cleanup becomes someone's job. On whether one machine holds: the cheapest MacBook, 8 GB of RAM with DuckDB capped at 5, ran all of ClickBench cold in 59.7 seconds, up to 2.8 times faster than the cloud instances it was measured against, and hot it came within 13 percent of a 16-vCPU box with four times the memory. TPC-DS SF100 on that same laptop: 1.63 second median, 15.5 minutes for the suite. A Galaxy S24 Ultra finished TPC-H SF100 over 30 GB in 235 seconds while an AWS r6id.large took 570.8. A 2012 MacBook Pro cleared all 22 TPC-H queries against a 265 GB database. Demand side: the median scan in Redshift and Snowflake reads about 100 MB, the 99.9th percentile under 300 GB.
 :::
@@ -192,7 +192,7 @@ Act break, chapter one: build the machine. Two quick intros (the engine, then th
 
 **DuckDB**: a full analytical database that lives *inside your R session*.
 
-- `install.packages("duckdb")`: no server, no cluster, no IT ticket
+- `install.packages("duckdb")`: no server or cluster, no IT ticket
 - Queries Parquet/CSV directly, scales past memory
 - dbplyr speaks fluent DuckDB: your dplyr code *is* the SQL
 
@@ -202,6 +202,8 @@ Act break, chapter one: build the machine. Two quick intros (the engine, then th
 
 ::: notes
 One-slide DuckDB primer for those who haven't touched it. The point to leave in their heads: it's already in R, and dplyr already drives it.
+
+The DeLorean line, explained: the "regular car" part is the install — `install.packages("duckdb")`, runs in-process inside R, no server to stand up, nothing for IT to provision. Looks like any other R package. The "absurd when you floor it" part is the engine under the hood: a columnar, vectorized execution engine (processes data in batches of a few thousand values at a time instead of row-by-row), morsel-driven parallelism across cores, and an out-of-core design that spills to disk so it can scan data larger than RAM without falling over. That combination is why a single laptop clears ClickBench and TPC-H/TPC-DS benchmarks that were built assuming a cluster — the numbers cited two slides back (59.7s cold ClickBench on an 8GB MacBook, 235s TPC-H SF100 on a Galaxy S24 Ultra) are that same engine, just demonstrated at the extreme. Point being: nothing about the install suggests that capability is in there.
 :::
 
 ## DuckLake: the lakehouse, minus the ceremony
@@ -213,9 +215,7 @@ A DuckDB extension where the **entire lakehouse** is:
 1. Parquet files in a folder (or S3)
 2. A plain SQL database as the catalog (DuckDB, SQLite, or Postgres)
 
-That's it. No cluster, no platform team.
-
-[Same pattern as Iceberg and Delta, at a scale one person can own.]{.quiet}
+[Same pattern as Iceberg and Delta, minus the cluster and the platform team.]{.quiet}
 :::
 
 ::: {.column width="50%"}
@@ -249,9 +249,7 @@ attach_ducklake("quack_lake", lake_path = "data/lake")
 
 <br/>
 
-That's a working, transactional, versioned data lake.
-
-In a folder. On a Tuesday. No platform team was harmed.
+That's a working data lake in a folder. Every write is transactional and versioned.
 
 ::: notes
 This executes for real at render. Emphasize the on-ramp: if they remember one code slide, it's this one.
@@ -286,7 +284,6 @@ with_transaction({
 
 - The write is **atomic**: both tables or neither
 - It's recorded with an **author** and a **commit message**
-- Sound familiar? It's a `git commit` for your data.
 
 ::: notes
 The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached.
@@ -342,7 +339,7 @@ The lake remembers everything: query the past, see **exactly what changed**, und
 :::
 
 ::: notes
-Act break, chapter two: use the machine. Reading history, surviving Biff, and proving to an auditor exactly what the data was.
+Act break, chapter two: use the machine. Reading history, surviving Biff, and fixing the timeline without erasing anyone from the log.
 :::
 
 ## Time travel {.center}
@@ -408,26 +405,6 @@ The question from the opening has an answer now: not a guess, the *rows*.
 The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Delivery note for me: row-level ops (rows_delete, rows_update) are what the feed traces; a full replace_table is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
 :::
 
-## The same question, without a time machine {.center}
-
-**Duke, 2006.** A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work.
-
-When MD Anderson biostatisticians Keith Baggerly and Kevin Coombes tried to verify it, the forensic work ran to about **1,500 hours**. What they found: sensitive/resistant labels reversed, gene lists shifted off by one row.
-
-Three clinical trials ran on it before Duke shut them down. Ten papers retracted.
-
-::: {.statement style="font-size: 1em; margin-top: .6em;"}
-That is the price of a missing paper trail.
-:::
-
-::: {.quiet style="text-align: center; margin-top: .6em;"}
-Baggerly & Coombes (2009), *Annals of Applied Statistics*. Their data and code: still public, still reproducible.
-:::
-
-::: notes
-One serious beat, and the only slide in the deck with nothing funny on it; part of the room knows this case, so let the recognition land. Timeline if asked: Potti and Nevins published the predictors starting 2006 in Nature Medicine; MD Anderson clinicians asked Baggerly and Coombes to vet them before adopting; the reconstruction became the 2009 Annals of Applied Statistics paper; Duke's three trials were suspended, restarted, then terminated in November 2010 as the scandal broke and Potti resigned; Retraction Watch counts ten retractions plus seven corrections, and the federal Office of Research Integrity found misconduct in 2015. The honest claim, and the reason the slide sits right after the change-feed demo: versioning would not have caught the errors by itself. It makes the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries; detection stays human. Their full supplement (raw data, R code, reports) is still served by bioinformatics.mdanderson.org, which is what would make a replay of this case possible.
-:::
-
 ## Fixing the timeline
 
 ```{r}
@@ -441,36 +418,6 @@ You fix the timeline **without erasing anyone from the photo**.
 
 ::: notes
 Callback to the Polaroid. Contrast with the flat-file world, where the fix is overwriting the overwrite and praying. History is append-only; even the recovery is auditable.
-:::
-
-## Freeze a moment forever
-
-```{r}
-#| eval: false
-# a read-only lake, pinned to the snapshot you reported from
-attach_ducklake("q3_submission", lake_path = "data/lake",
-                snapshot_version = 3, read_only = TRUE)
-```
-
-::: columns
-::: {.column width="55%"}
-```{r}
-#| echo: false
-#| fig-height: 4.2
-plot_snapshots() + theme_bttf
-```
-:::
-::: {.column width="45%"}
-![](images/stills/clock-tower.webp){width="380"}
-
-::: {.quiet}
-In my world of prostate cancer clinical trials, "trust me" is not an audit trail. *This* is what a regulator can read.
-:::
-:::
-:::
-
-::: notes
-The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
 
 ## The other half of the paper trail
@@ -497,10 +444,6 @@ The turn into chapter three. Snapshots answer what changed, who, and why. The st
 :::
 ::: {.column style="width: 55%; text-align: left;"}
 <br/><br/>
-The Y-shaped diagram in Doc's car?
-
-**It was a lineage DAG all along.**
-
 [{dplyneage}: column-level lineage for dplyr pipelines]{.cyan}
 
 [Follow every column to its source, and know what breaks **before** you change the past.]{style="font-size: .85em; color: #c0c5ce;"}
@@ -562,7 +505,7 @@ How does it know?
 <br/>
 
 ::: {.quiet style="text-align: center;"}
-No parsing your SQL with regex. No YAML confessional. No Python required.
+No parsing your SQL with regex, no YAML confessional. No Python required.
 :::
 
 ::: notes
@@ -686,4 +629,54 @@ The audit question this answers: "for the June submission, what fed this estimat
 
 ::: notes
 Kept for Q&A. Time travel changes what the data was, never where it came from, so a past snapshot yields the same DAG as today for the same code.
+:::
+
+## The same question, without a time machine {.center visibility="uncounted"}
+
+**Duke, 2006.** A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work.
+
+When MD Anderson biostatisticians Keith Baggerly and Kevin Coombes tried to verify it, the forensic work ran to about **1,500 hours**. What they found: sensitive/resistant labels reversed, gene lists shifted off by one row.
+
+Three clinical trials ran on it before Duke shut them down. Ten papers retracted.
+
+::: {.statement style="font-size: 1em; margin-top: .6em;"}
+That is the price of a missing paper trail.
+:::
+
+::: {.quiet style="text-align: center; margin-top: .6em;"}
+Baggerly & Coombes (2009), *Annals of Applied Statistics*. Their data and code: still public, still reproducible.
+:::
+
+::: notes
+One serious beat, and the only slide in the deck with nothing funny on it; part of the room knows this case, so let the recognition land. Timeline if asked: Potti and Nevins published the predictors starting 2006 in Nature Medicine; MD Anderson clinicians asked Baggerly and Coombes to vet them before adopting; the reconstruction became the 2009 Annals of Applied Statistics paper; Duke's three trials were suspended, restarted, then terminated in November 2010 as the scandal broke and Potti resigned; Retraction Watch counts ten retractions plus seven corrections, and the federal Office of Research Integrity found misconduct in 2015. The honest claim, and the reason the slide sits right after the change-feed demo: versioning would not have caught the errors by itself. It makes the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries; detection stays human. Their full supplement (raw data, R code, reports) is still served by bioinformatics.mdanderson.org, which is what would make a replay of this case possible.
+:::
+
+## Freeze a moment forever {visibility="uncounted"}
+
+```{r}
+#| eval: false
+# a read-only lake, pinned to the snapshot you reported from
+attach_ducklake("q3_submission", lake_path = "data/lake",
+                snapshot_version = 3, read_only = TRUE)
+```
+
+::: columns
+::: {.column width="55%"}
+```{r}
+#| echo: false
+#| fig-height: 4.2
+plot_snapshots() + theme_bttf
+```
+:::
+::: {.column width="45%"}
+![](images/stills/clock-tower.webp){width="380"}
+
+::: {.quiet}
+In my world of prostate cancer clinical trials, "trust me" is not an audit trail. *This* is what a regulator can read.
+:::
+:::
+:::
+
+::: notes
+The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
