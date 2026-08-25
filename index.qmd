@@ -129,7 +129,7 @@ For **code**, versioning is a reflex:
 - "who changed this, and why?" is `git blame`
 :::
 
-::: {.column style="width: 50%;"}
+::: {.column .fragment style="width: 50%;"}
 For **data**, we do our best:
 
 - dated folders, `_v2` suffixes
@@ -148,10 +148,12 @@ Data pipelines need a paper trail, what changed, who changed it, why, and where 
 
 ## The lakehouse, in one slide
 
+::: {.incremental}
 - Your tables live as **open files**, almost always Parquet (cheap, columnar)
 - A **catalog** tracks which files make up each table, at each version
 - Writes are **transactions**: atomic, versioned, never in a half-state
 - This is what Iceberg and Delta Lake do for the Spark world
+:::
 
 ::: {.fragment style="text-align: center; margin-top: .6em;"}
 ::: columns
