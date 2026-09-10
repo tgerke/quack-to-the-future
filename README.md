@@ -13,7 +13,7 @@ Slides for my talk at posit::conf(2026) in Houston:
 
 ## Rendering the slides
 
-The code chunks execute for real at render time (the demo lake in `data/` is rebuilt on each render), so both packages need to be installed:
+The code chunks execute for real at render time (the demo lake in `data/` is rebuilt on each render), so both packages need to be installed. ducklake is on CRAN, but the slides show the one-line commit confirmations that only the development version prints, so install that one:
 
 ```r
 pak::pak("tgerke/ducklake-r")

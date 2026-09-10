@@ -20,21 +20,21 @@
     <text x="150" y="180" font-size="34" font-weight="700" fill="#2b1608">Bronze</text>
     <text x="150" y="218" font-size="20" fill="#3d2410">raw, as received</text>
     <text x="150" y="244" font-size="20" fill="#3d2410">nothing edited, ever</text>
-    <text x="150" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">vehicles_raw</text>
+    <text x="150" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">bronze.vehicles</text>
 
     <!-- silver -->
     <rect x="330" y="120" width="240" height="150" rx="18" fill="url(#silverg)"/>
     <text x="450" y="180" font-size="34" font-weight="700" fill="#20242c">Silver</text>
     <text x="450" y="218" font-size="20" fill="#343a45">cleaned &amp; conformed</text>
     <text x="450" y="244" font-size="20" fill="#343a45">types, names, dedup</text>
-    <text x="450" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">vehicles_clean</text>
+    <text x="450" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">silver.vehicles</text>
 
     <!-- gold -->
     <rect x="630" y="120" width="240" height="150" rx="18" fill="url(#goldg)"/>
     <text x="750" y="180" font-size="34" font-weight="700" fill="#3d2e00">Gold</text>
     <text x="750" y="218" font-size="20" fill="#4d3a00">analysis-ready</text>
     <text x="750" y="244" font-size="20" fill="#4d3a00">business logic applied</text>
-    <text x="750" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">efficiency_by_origin</text>
+    <text x="750" y="318" font-size="19" fill="#8a90ad" font-family="'Fira Code',monospace">gold.efficiency_by_cyl</text>
 
     <!-- arrows -->
     <path d="M275 195 L322 195" stroke="#8a90ad" stroke-width="5" marker-end="url(#arr)"/>
