@@ -55,3 +55,16 @@ the "how it works" slide moved out of it.
 - Close-slide maturity line: ducklake 0.7.0 is on CRAN, dplyneage 0.3.1 is
   on GitHub. The old Zenodo DOI mention came out. Re-add it after checking
   that the DOI points at a current release.
+
+## Same-day follow-ups
+
+- Click fragments are back on every content slide, one chunk or one line
+  at a time, so the room reads at the speaker's pace.
+- Biff now deletes the efficient cars (mpg of 20 or better), leaving a
+  table of gas guzzlers. The guard chunk also checks the row count.
+- The medallion diagram is an inline SVG in the deck's own fonts and
+  palette. An `<img>` cannot use the page's web fonts, so the file under
+  `images/svg/` went away.
+- The medallion slide introduces the word "schema", which the code uses
+  from the next slide on.
+- The close prints the Monday-sized ask instead of a slogan.

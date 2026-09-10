@@ -133,10 +133,6 @@ For **data**, we do our best:
 :::
 :::
 
-::: {.fragment .statement style="text-align: center; margin-top: .5em; font-size: 1.05em;"}
-**Git-grade history** for your data, *without leaving R*.
-:::
-
 ::: notes
 Data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. 
 :::
@@ -194,10 +190,12 @@ A lakehouse that fits in a **folder**:
 1. Parquet files hold the rows
 2. A plain SQL database is the catalog: every table, column, and change
 
+::: {.fragment fragment-index=2}
 [**DuckDB**, the analytical database that already lives inside your R session, does the work. {ducklake} puts dplyr on top.]{style="font-size: .85em;"}
 :::
+:::
 
-::: {.column width="50%"}
+::: {.column .fragment fragment-index=1 width="50%"}
 <div class="terminal" style="font-size: .6em;">
 <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> your entire lakehouse</div>
 <div class="term-body">
@@ -211,7 +209,7 @@ data/lake/<br/>
 :::
 :::
 
-::: {style="text-align: center; margin-top: .5em;"}
+::: {.fragment fragment-index=2 style="text-align: center; margin-top: .5em;"}
 [It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it.]{.orange}
 :::
 
@@ -232,9 +230,11 @@ attach_ducklake("quack_lake", lake_path = "data/lake")
 
 <br/>
 
+::: {.fragment}
 One call opens a lake, and creates it first when nothing is at the path yet.
 
 That's a working data lake in a folder. Every write from here is transactional and versioned.
+:::
 
 ::: notes
 This executes for real at render. Emphasize the on-ramp: if they remember one code slide, it's this one. The DuckLake extension downloads itself the first time a lake is attached, with a message saying where it went; `install_ducklake()` exists only to fetch it ahead of time for containers and CI. If asked about safety: `create = FALSE` makes a mistyped path an error instead of a new, empty lake. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine; a team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
@@ -242,14 +242,26 @@ This executes for real at render. Emphasize the on-ramp: if they remember one co
 
 ## The plan: a medallion pipeline
 
-![](images/svg/medallion.svg){width="900" fig-align="center"}
+```{=html}
+<div class="medallion">
+<div class="med-card med-bronze"><div class="med-title">Bronze</div><div class="med-line">raw, as received</div><div class="med-line dim">nothing edited, ever</div><div class="med-label">bronze.vehicles</div></div>
+<div class="med-arrow"></div>
+<div class="med-card med-silver"><div class="med-title">Silver</div><div class="med-line">cleaned &amp; conformed</div><div class="med-line dim">types, names, dedup</div><div class="med-label">silver.vehicles</div></div>
+<div class="med-arrow"></div>
+<div class="med-card med-gold"><div class="med-title">Gold</div><div class="med-line">analysis-ready</div><div class="med-line dim">business logic applied</div><div class="med-label">gold.efficiency_by_cyl</div></div>
+</div>
+```
 
-::: {.quiet style="text-align: center;"}
-Fancy name, honest idea: keep raw data sacred, refine in stages, analyze from gold.
+::: {.fragment style="text-align: center; margin-top: .3em;"}
+Keep raw data sacred, refine in stages, analyze from gold. Each hop is one versioned, documented transaction.
+:::
+
+::: {.fragment style="text-align: center; margin-top: .3em;"}
+Each layer is a **schema**: a named group of tables inside the lake. On disk, it's a folder.
 :::
 
 ::: notes
-Medallion in 20 seconds: it's just staged refinement with rules. The demo follows these three hops, and each layer gets a schema of its own, so the folder on the DuckLake slide is the medallion.
+Medallion in 20 seconds: it's just staged refinement with rules, and the demo follows these three hops. Schema is the word the code uses from here on: create_schema("bronze") makes the layer, and every table name carries it, as in bronze.vehicles. The folder listing on the DuckLake slide is these three schemas on disk.
 :::
 
 ## Load the raw layer
@@ -259,18 +271,25 @@ Medallion in 20 seconds: it's just staged refinement with rules. The demo follow
 with_transaction({
   create_schema("bronze"); create_schema("silver"); create_schema("gold")
 }, author = "marty", commit_message = "Create medallion layers")
+```
 
+::: {.fragment}
+```{r}
+#| message: true
 with_transaction(
   create_table(df_vehicles, "bronze.vehicles"),
   author = "marty", commit_message = "Load raw vehicle data"
 )
 ```
+:::
 
-- Everything inside `with_transaction()` lands as one snapshot, or not at all
+::: {.fragment}
+- Everything inside `with_transaction()` lands as one snapshot. If any step fails, nothing lands.
 - Every commit carries an **author** and a **message**, and the confirmation names the snapshot
+:::
 
 ::: notes
-The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached. Each layer gets a schema of its own, which keeps bronze, silver, and gold one lineage under three roofs and lets access to raw data be restricted at the schema level. The snapshot number in the confirmation is the version number that time travel uses in chapter two; snapshot 0 is the lake's creation.
+The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached. "If any step fails, nothing lands" is atomicity: an R error partway through the block, a DuckLake error such as a type that will not cast, or a conflicting commit from another writer that DuckLake could not retry past all roll the whole transaction back, so a half-finished change never reaches the lake. Each layer gets a schema of its own, which keeps bronze, silver, and gold one lineage under three roofs and lets access to raw data be restricted at the schema level. The snapshot number in the confirmation is the version number that time travel uses in chapter two; snapshot 0 is the lake's creation.
 :::
 
 ## Derive silver and gold
@@ -283,7 +302,11 @@ silver <- get_ducklake_table("bronze.vehicles") |>
 
 with_transaction(create_table(silver, "silver.vehicles"),
   author = "doc", commit_message = "Clean and standardize vehicles")
+```
 
+::: {.fragment}
+```{r}
+#| message: true
 gold <- get_ducklake_table("silver.vehicles") |>
   group_by(cyl) |>
   summarise(avg_mpg = mean(mpg, na.rm = TRUE), n_models = n())
@@ -291,8 +314,11 @@ gold <- get_ducklake_table("silver.vehicles") |>
 with_transaction(create_table(gold, "gold.efficiency_by_cyl"),
   author = "doc", commit_message = "Gold: efficiency by cylinder count")
 ```
+:::
 
+::: {.fragment}
 `get_ducklake_table()` returns a **lazy table**. `create_table()` runs the query inside DuckDB and writes the result into the lake: the rows never pass through R.
+:::
 
 ::: notes
 No new verbs to learn: select, mutate, group_by, summarise. The only additions are the bookends: get a table, create a table, wrapped in a documented transaction. Each recipe is kept in a variable on purpose, because the recipe that builds a layer is also its lineage; chapter three draws the diagram from these two objects. Gold is a summary here so the diagram gets an aggregation edge and the table is three rows anyone can read.
@@ -307,7 +333,7 @@ list_table_snapshots() |>
 
 <br/>
 
-::: {.statement style="font-size: 1em;"}
+::: {.fragment .statement style="font-size: 1em;"}
 Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
@@ -329,36 +355,43 @@ Act break, chapter two: use the machine. Surviving Biff, reading history, and fi
 
 ```{r}
 #| message: true
-gas_guzzlers <- get_ducklake_table("silver.vehicles") |>
-  filter(mpg < 25) |>          # "cleanup"
+efficient_cars <- get_ducklake_table("silver.vehicles") |>
+  filter(mpg >= 20) |>         # Biff hates the environment
   select(model)
 
 with_transaction(
-  rows_delete(get_ducklake_table("silver.vehicles"), gas_guzzlers, by = "model"),
+  rows_delete(get_ducklake_table("silver.vehicles"), efficient_cars, by = "model"),
   author = "biff", commit_message = "small tweak"
 )
 ```
 
+::: {.fragment}
 ```{r}
 get_ducklake_table("silver.vehicles") |> tally() |> collect()
 ```
+:::
 
 ```{r}
 #| include: false
-# later slides print snapshot numbers as literals; fail the render if they drift
-stopifnot(max(list_table_snapshots()$snapshot_id) == 5)
+# later slides print snapshot numbers and row counts as literals; fail the render if they drift
+stopifnot(
+  max(list_table_snapshots()$snapshot_id) == 5,
+  pull(collect(tally(get_ducklake_table("silver.vehicles"))), n) == 18
+)
 ```
 
-32 rows → 6 rows, on a Friday afternoon, labeled **"small tweak."**
+::: {.fragment}
+32 rows → 18 rows, on a Friday afternoon, labeled **"small tweak."**
+:::
 
 ::: notes
-Every team has a Biff. Sometimes Biff is you, at 4:47 PM. You can't prevent the mistake; you can make it visible, attributed, and reversible. Delivery note for me: row-level operations (rows_delete, rows_update) are what the change feed on the next slide traces; a full replace_table() rewrite is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete.
+Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. You can't prevent the mistake; you can make it visible, attributed, and reversible. Delivery note for me: row-level operations (rows_delete, rows_update) are what the change feed on the next slide traces; a full replace_table() rewrite is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete rather than a filter followed by replace_table().
 :::
 
 ## "What happened?" is now a query
 
 ```{r}
-get_table_changes("silver.vehicles", start = 5, end = 5) |>
+get_table_changes("silver.vehicles", start = 5, end = 5) |>   # snapshot 5: Biff's commit
   select(change_type, model, mpg) |>
   head(3) |>
   collect()
@@ -370,12 +403,16 @@ n_biff_deleted <- get_table_changes("silver.vehicles", start = 5, end = 5) |>
   filter(change_type == "delete") |> tally() |> collect() |> pull(n)
 ```
 
+::: {.fragment}
 All `r n_biff_deleted` deleted rows, with the values they had **before** Biff touched them.
+:::
 
+::: {.fragment}
 The question from the opening has an answer now: not a guess, the *rows*.
+:::
 
 ::: notes
-The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Snapshot 5 is the number Biff's confirmation printed on the last slide.
+The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Where 5 comes from: it is the snapshot number Biff's confirmation printed on the last slide, and the same number is in list_table_snapshots(). Start and end are both 5 because the question is about that one commit; start = 2, end = 5 would list everything since the raw load. Why collect(): the feed is a lazy table, and printing one adds a "Source: SQL" header with the catalog's file path, so collect() brings the rows into R and prints a plain tibble.
 :::
 
 ## Fixing the timeline
@@ -384,16 +421,20 @@ The payoff of the changed-number question from the hook. DuckLake calls this the
 get_ducklake_table_version("silver.vehicles", version = 3) |> tally() |> collect()
 ```
 
+::: {.fragment}
 ```{r}
 #| message: true
 restore_table_version("silver.vehicles", version = 3, author = "doc")
 
 list_table_snapshots("silver.vehicles") |> select(snapshot_id, author, commit_message)
 ```
+:::
 
+::: {.fragment}
 Snapshot 3 never went anywhere. Restore rolls **forward** as a *new* snapshot: Biff's mistake stays in the log.
 
 You fix the timeline **without erasing anyone from the photo**.
+:::
 
 ::: notes
 Callback to the Polaroid. Any table can be read exactly as it was at any snapshot, or at any timestamp with `get_ducklake_table_asof()`; to freeze a whole session at one snapshot, attach the lake with `snapshot_version` (backup slide). Contrast with the flat-file world, where the fix is overwriting the overwrite and praying. History is append-only; even the recovery is auditable.
@@ -431,10 +472,12 @@ lake_lineage <- extract_lineage(list(
 lineage_flow(lake_lineage, theme = "dark", height = "560px")
 ```
 
+::: {.fragment}
 The two recipes from chapter one, passed under the names they were saved as. No YAML, no SQL parsing: {dplyneage} walks the query tree dbplyr already built.
+:::
 
 ::: notes
-The money demo. For one pipeline it is just `gold |> extract_lineage() |> lineage_flow()`; the named list stitches the layers so bronze, silver, and gold appear as one graph. Next slide is the live widget: drag a table, hover a column to highlight its connections and see the expression label (as.integer(cyl) into silver, mean(mpg) into gold), click a column to isolate everything upstream and downstream of it.
+The money demo. For one pipeline it is just `gold |> extract_lineage() |> lineage_flow()`. Where bronze comes from, since it is not in the list: each recipe's query tree names the tables it reads, so silver's tree has bronze.vehicles at its base and gold's tree has silver.vehicles. Every table a recipe reads becomes a source node, and when a source name matches a name in the list the two hops are stitched, which is how silver becomes the transform node in the middle. Bronze matches nothing in the list, so it stays a plain source on the left. Nothing is traced upstream or downstream to draw this; the graph is the recipes' own structure, and two slides on we ask that graph questions with lineage_downstream() and lineage_upstream(). Next slide is the live widget: drag a table, hover a column to highlight its connections and see the expression label (as.integer(cyl) into silver, mean(mpg) into gold), click a column to isolate everything upstream and downstream of it.
 
 For the "what's the catch" people: dbplyr already built the query tree; dplyneage reads it, in pure R, so attribution is exact rather than best-effort string matching (backup slide). Likely Q&A: "does it work on plain data frames?" A local dplyr pipeline has no query tree to walk, so no. The one-line fix is dbplyr::tbl_lazy(df, name = "df"), and the identical pipeline becomes traceable; extract_lineage() errors with exactly that pointer.
 :::
@@ -443,15 +486,22 @@ For the "what's the catch" people: dbplyr already built the query tree; dplyneag
 
 ```{r}
 lineage_downstream(lake_lineage, "bronze.vehicles.mpg")           # what would I break?
-lineage_upstream(lake_lineage, "gold.efficiency_by_cyl.avg_mpg")  # where did this come from?
 ```
 
+::: {.fragment}
+```{r}
+lineage_upstream(lake_lineage, "gold.efficiency_by_cyl.avg_mpg")  # where did this come from?
+```
+:::
+
+::: {.fragment}
 ::: columns
 ::: {.column width="60%"}
 Impact analysis as a function call: know what a change touches **before** you make it.
 :::
 ::: {.column width="40%"}
 ![](images/stills/almanac.webp){width="340"}
+:::
 :::
 :::
 
@@ -468,10 +518,12 @@ The almanac lesson: changing upstream data without knowing the downstream conseq
 | {ducklake} | *when / who / why* did tables change? | every write is an authored, versioned commit |
 | {dplyneage} | *where* did each column come from? | exact lineage from your dplyr code |
 
-Strip away the duck and the recipe is small: an **open format**, a **catalog**, and writes that land as **commits**. DuckLake is the road I took; Iceberg and Delta go to the same place.
+::: {.fragment}
+The recipe is small: an **open format**, a **catalog**, and writes that land as **commits**. DuckLake is the road I took; Iceberg and Delta go to the same place.
+:::
 
-::: {.statement style="font-size: 1.05em; margin-top: .5em;"}
-We made version control a habit for code. **Data's turn.**
+::: {.fragment .statement style="font-size: 1.05em; margin-top: .5em;"}
+Take one pipeline you own. Put its tables in a lake, with **authored commits**.
 :::
 
 ::: {.quiet style="text-align: center; margin-top: .7em; font-family: 'Fira Code', monospace;"}
@@ -479,7 +531,7 @@ We made version control a habit for code. **Data's turn.**
 :::
 
 ::: notes
-The whole close on one slide. Bring the stem back: what changed, who, why is ducklake; where every column came from is dplyneage. They compose because both are lazy tables: query a past snapshot, extract lineage on it, same DAG (backup slide). Then the big idea without the branding: this community made code versioning a norm, and the ask is to extend that norm to data. If someone walks out and reaches for Iceberg instead of DuckLake, the talk still worked. CTA stays Monday-sized: take one pipeline you already own and put its tables in a lake with authored commits. Thirty minutes, reversible. Maturity if asked: experimental lifecycle badges on both; ducklake 0.7.0 is on CRAN; dplyneage 0.3.1 is on GitHub; docs at tgerke.github.io/ducklake-r and tgerke.github.io/dplyneage. Spoken sign-off over this slide, slow and sincere: your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
+The whole close on one slide. Bring the stem back: what changed, who, why is ducklake; where every column came from is dplyneage. They compose because both are lazy tables: query a past snapshot, extract lineage on it, same DAG (backup slide). Then the recipe without the branding, so that someone who walks out and reaches for Iceberg instead of DuckLake still proves the talk worked. The ask is printed and Monday-sized: one pipeline you already own, its tables in a lake with authored commits. Thirty minutes, reversible. Maturity if asked: experimental lifecycle badges on both; ducklake 0.7.0 is on CRAN; dplyneage 0.3.1 is on GitHub; docs at tgerke.github.io/ducklake-r and tgerke.github.io/dplyneage. Spoken sign-off over this slide, slow and sincere: your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
 :::
 
 # Backup {.divider visibility="uncounted"}

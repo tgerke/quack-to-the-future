@@ -211,6 +211,55 @@ $code-block-border-color: #262b47;
     border-radius: 10px;
     background: #10132a;
   }
+
+  // ---- Medallion diagram --------------------------------------------------------
+  // HTML rather than SVG: SVG text paints at the wrong scale under the CSS zoom
+  // reveal uses in Chrome, and HTML picks up the deck fonts for free.
+  .medallion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6em;
+    margin: .3em auto 0;
+  }
+  .med-card {
+    width: 7.4em;
+    padding: .5em .5em .55em;
+    border-radius: 14px;
+    background: #131628;
+    border: 3px solid;
+    text-align: center;
+  }
+  .med-bronze { border-color: #e0975a;     box-shadow: 0 0 20px rgba(#e0975a, .5);     .med-title { color: #e0975a; } }
+  .med-silver { border-color: $silver;      box-shadow: 0 0 20px rgba($silver, .4);      .med-title { color: $silver; } }
+  .med-gold   { border-color: $bttf-yellow; box-shadow: 0 0 20px rgba($bttf-yellow, .5); .med-title { color: $bttf-yellow; } }
+  .med-title { font-family: 'Archivo Black', sans-serif; font-size: .9em; line-height: 1.2; margin-bottom: .25em; }
+  .med-line { font-size: .55em; line-height: 1.35; color: #e8eaf2; }
+  .med-line.dim { color: #8a90ad; }
+  .med-label {
+    font-family: 'Fira Code', monospace;
+    font-size: .5em;
+    color: $plasma;
+    margin-top: .6em;
+    padding-top: .5em;
+    border-top: 1px solid #262b47;
+  }
+  .med-arrow {
+    flex: none;
+    width: 1.3em;
+    height: 4px;
+    background: #8a90ad;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      right: -4px;
+      top: -6px;
+      border-left: 12px solid #8a90ad;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+  }
 }
 
 // Cold-open auto-fade timing; end states match the print-pdf overrides below.
