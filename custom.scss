@@ -121,10 +121,11 @@ $code-block-border-color: #262b47;
     box-shadow: 0 14px 40px rgba(0,0,0,.55);
     img { margin: 0; display: block; }
   }
-  // Cold open: the photo fades on its own ~2s after the slide appears while
-  // the caption fades in beneath it. Scoped to .present so it replays on revisit.
+  // Cold open: the photo starts fading the moment the slide appears and takes
+  // 20s, about as long as telling the story over it; the caption fades in
+  // beneath it. Scoped to .present so it replays on revisit.
   .auto-fade-out { opacity: 1; }
-  section.present .auto-fade-out { animation: photo-fade-out 2.4s ease 2s forwards; }
+  section.present .auto-fade-out { animation: photo-fade-out 20s linear forwards; }
   .auto-fade-in { opacity: 0; }
   section.present .auto-fade-in { animation: caption-fade-in 2.4s ease 2s forwards; }
 

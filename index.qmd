@@ -81,36 +81,39 @@ theme_bttf <- ggplot2::theme(
 ## Unversioned data fades {.center}
 
 ::: {.columns style="align-items: center;"}
-::: {.column style="width: 50%;"}
+::: {.column style="width: 55%;"}
+```{=html}
 <div class="terminal" style="font-size: .6em;">
+<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> analysis.R &nbsp;·&nbsp; git: unchanged since Mar 14</div>
+<div class="term-body" style="white-space: pre;">df &lt;- read_excel(
+  "data/2026-03-14/export_v2_FINAL.xlsx"
+)</div>
+</div>
+<div class="terminal" style="font-size: .6em; margin-top: .8em;">
 <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/projects/q3-report/data</div>
-<div class="term-body">
-analysis_data.csv<br/>
-analysis_data_v2.csv<br/>
-analysis_data_v2_<span class="hl">FINAL</span>.csv<br/>
-analysis_data_v2_FINAL_<span class="hl">fixed</span>.csv<br/>
-analysis_data_v2_FINAL_fixed_<span class="hl">USE_THIS_ONE</span>.csv<br/>
-<span class="dim">analysis_data_old_DO_NOT_USE.csv</span><br/>
-<span class="dim">temp.csv</span>
+<div class="term-body" style="white-space: pre;"><span class="dim">2025-12-01/</span>
+<span class="dim">2026-01-15/</span>
+2026-03-14/
+  export.csv            <span class="dim">Mar 14</span>
+  export_v2.csv         <span class="dim">Mar 14</span>
+  export_v2_FINAL.xlsx  <span class="hl">Jun  2  ← edited in place</span></div>
 </div>
-</div>
+```
 :::
 
-::: {.column style="width: 50%; text-align: center;"}
+::: {.column style="width: 45%; text-align: center;"}
 <div class="polaroid">
-<img src="images/stills/fading-photo.webp" class="no-round auto-fade-out" style="width: 440px;" alt="Marty's fading family photograph"/>
+<img src="images/stills/fading-photo.webp" class="no-round auto-fade-out" style="width: 500px;" alt="Marty's fading family photograph"/>
 </div>
 :::
 :::
 
 ::: {.auto-fade-in style="text-align: center; margin-top: .4em;"}
-"Hey, this number **changed** since the last version. What happened?"
-
-[You have absolutely no idea. Somewhere in the past, the timeline **skewed**.]{.quiet}
+"Why did this number **change**?" [You have no idea. Somewhere in the past, the timeline **skewed**.]{.quiet}
 :::
 
 ::: notes
-This data setup may look familiar to many of you: filenames are our version control, Slack is our audit log, memory is our lineage system. Every overwrite of an existing file is Marty's siblings disappearing, and what the data looked like, who changed it, and why quietly erase. The question is Marty's alternate 1985: someone changed your data upstream, and you can't see where the timeline forked; pays off at the change-feed and almanac slides.
+Most of the room runs this setup: a dated folder for each data drop, a script in git that reads one of them. Then someone opens the spreadsheet, fixes a cell, and saves. Git sees nothing. It only watches the code. In September a colleague asks why a number changed since March, and you have no idea. The folder says March 14, the file says June 2, and nothing says who or why. Filenames are our version control, Slack is our audit log, memory is our lineage system. The question is Marty's alternate 1985: someone changed the data upstream and you can't see where the timeline forked. Pays off in chapter two. Biff's small tweak is this June 2 edit made inside a lake, where there is no such thing as an in-place edit: every change lands as a new snapshot with an author and a message, and the old rows stay readable. The spreadsheet itself is what bronze is for: load it as received under an authored commit, and when an edited copy shows up later, the difference between the two loads is a query.
 :::
 
 ## We solved this once, for code {.center}
@@ -261,7 +264,7 @@ Each layer is a **schema**: a named group of tables inside the lake. On disk, it
 :::
 
 ::: notes
-Medallion in 20 seconds: it's just staged refinement with rules, and the demo follows these three hops. Schema is the word the code uses from here on: create_schema("bronze") makes the layer, and every table name carries it, as in bronze.vehicles. The folder listing on the DuckLake slide is these three schemas on disk.
+Medallion in 20 seconds: it's just staged refinement with rules, and the demo follows these three hops. Bronze is also the answer to the opening's edited spreadsheet: load the file as received, under an authored commit, and the lake's copy is the record of what arrived and when. Schema is the word the code uses from here on: create_schema("bronze") makes the layer, and every table name carries it, as in bronze.vehicles. The folder listing on the DuckLake slide is these three schemas on disk.
 :::
 
 ## Load the raw layer
@@ -385,7 +388,7 @@ stopifnot(
 :::
 
 ::: notes
-Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. You can't prevent the mistake; you can make it visible, attributed, and reversible. Delivery note for me: row-level operations (rows_delete, rows_update) are what the change feed on the next slide traces; a full replace_table() rewrite is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete rather than a filter followed by replace_table().
+Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. You can't prevent the mistake; you can make it visible, attributed, and reversible. Callback to the opening: this is the June 2 spreadsheet edit, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. Delivery note for me: row-level operations (rows_delete, rows_update) are what the change feed on the next slide traces; a full replace_table() rewrite is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete rather than a filter followed by replace_table().
 :::
 
 ## "What happened?" is now a query
