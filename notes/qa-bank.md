@@ -54,14 +54,22 @@ hold only the spoken script. Grouped by the slide it belongs with.
 
 ## Fixing the timeline
 
-- To freeze a whole session at one snapshot, attach the lake with `snapshot_version`
-  (the "Freeze a moment forever" backup slide).
+- To freeze a whole session at one snapshot, attach the lake with `snapshot_version`,
+  and `read_only = TRUE` for a pinned lake a regulator can read:
+  `attach_ducklake("q3_submission", lake_path = "data/lake", snapshot_version = 4, read_only = TRUE)`.
+  `plot_snapshots()` draws the snapshot timeline.
 
 ## The recipe is the lineage
 
-- The catch: dbplyr already built the query tree; dplyneage reads it in pure R, so
-  attribution is exact rather than best-effort string matching ("No plutonium required"
-  backup slide).
+- How it knows: dbplyr already built the query tree; dplyneage walks it directly, in pure
+  R, so attribution is exact rather than best-effort string matching. Joins,
+  aggregations, windows, and unions resolve to true source columns. dtplyr and arrow
+  pipelines get the same walk; raw SQL and duckplyr go through sqlglot (Python,
+  provisioned on first use).
+- Beyond R: `lineage_json()` to commit next to the code and diff in CI, `lineage_check(old, new)`
+  to fail the PR that rewires a column, `lineage_openlineage()` for DataHub, Marquez, and
+  OpenMetadata; `lineage_mermaid()` renders on GitHub and in Quarto, `lineage_graphml()`
+  opens in Gephi, yEd, and igraph.
 - Plain data frames: a local dplyr pipeline has no query tree to walk, so no. The
   one-line fix is `dbplyr::tbl_lazy(df, name = "df")`, and the identical pipeline becomes
   traceable; `extract_lineage()` errors with exactly that pointer.
@@ -78,8 +86,14 @@ hold only the spoken script. Grouped by the slide it belongs with.
 - The "lineage that travels with the data" article on the dplyneage site covers
   `commit_extra_info` and `lineage_from_json()`.
 
-## The same question, without a time machine
+## The Duke case (cut from the deck, kept for Q&A)
 
+- In one breath: Duke, 2006, a genomic predictor promised to match each cancer patient
+  to the chemotherapy most likely to work. Baggerly and Coombes at MD Anderson spent
+  about 1,500 hours reconstructing it and found sensitive/resistant labels reversed and
+  gene lists shifted by one row. Three trials ran on it before Duke stopped them; ten
+  papers retracted (Baggerly & Coombes 2009, Annals of Applied Statistics). Versioning
+  would not have caught the errors by itself; it makes the reconstruction cheap.
 - Timeline: Potti and Nevins published the predictors starting 2006 in Nature Medicine;
   MD Anderson clinicians asked Baggerly and Coombes to vet them before adopting; the
   reconstruction became the 2009 Annals of Applied Statistics paper; Duke's three trials

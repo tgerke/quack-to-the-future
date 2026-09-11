@@ -37,23 +37,6 @@ dir.create("data/lake", recursive = TRUE, showWarnings = FALSE)
 # rows_delete(), the change feed). Done here so the load slide shows mtcars
 # going into bronze untouched, which is the point of that slide.
 mtcars <- mtcars |> tibble::rownames_to_column("model")
-
-# colors mirror custom.scss so ggplot output sits flush on the slide background
-theme_bttf <- ggplot2::theme(
-  text = ggplot2::element_text(color = "#e8eaf2", size = 16),
-  plot.title = ggplot2::element_text(color = "#e8eaf2", face = "bold", size = 18),
-  plot.subtitle = ggplot2::element_text(color = "#8a90ad", size = 13),
-  axis.text = ggplot2::element_text(color = "#8a90ad", size = 12),
-  axis.title = ggplot2::element_text(color = "#8a90ad", size = 13),
-  legend.title = ggplot2::element_text(color = "#e8eaf2"),
-  legend.text = ggplot2::element_text(color = "#c0c5ce"),
-  panel.grid.major = ggplot2::element_line(color = "#262b47"),
-  panel.grid.minor = ggplot2::element_blank(),
-  plot.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
-  panel.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
-  legend.background = ggplot2::element_rect(fill = "#0d0f1e", color = NA),
-  legend.key = ggplot2::element_rect(fill = "#0d0f1e", color = NA)
-)
 ```
 
 ## {.center background-color="#0d0f1e"}
@@ -486,7 +469,7 @@ lineage_flow(lake_lineage, theme = "dark", height = "560px")
 ```
 
 ::: {.fragment}
-The two recipes from chapter one, passed under the names they were saved as. No YAML, no SQL parsing: {dplyneage} walks the query tree dbplyr already built.
+{dplyneage} walks the query tree dbplyr already built.
 :::
 
 ::: notes
@@ -539,114 +522,4 @@ Take one pipeline you own. Put its tables in a lake, with **authored commits**.
 
 ::: notes
 So, the whole paper trail. What changed, who changed it, and why: that is {ducklake}, where every write is an authored, versioned commit. Where every column came from: that is {dplyneage}, exact lineage from your dplyr code. They compose, because both work on lazy tables: query a past snapshot, extract lineage on it, same DAG. The ask is Monday-sized. Take one pipeline you already own and put its tables in a lake, with authored commits. Thirty minutes, and reversible. Your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
-:::
-
-# Backup {.divider visibility="uncounted"}
-
-## No plutonium required {visibility="uncounted"}
-
-How does it know?
-
-- Your dplyr pipeline is already a **lazy query tree** (thanks, dbplyr)
-- {dplyneage} walks that tree directly, in **pure R**, with exact attribution
-- Joins, aggregations, windows, unions: resolved to true source columns
-- dtplyr and arrow pipelines get the same walk; raw SQL and duckplyr go through sqlglot (Python, provisioned on first use)
-
-<br/>
-
-::: {.quiet style="text-align: center;"}
-No parsing your SQL with regex, no YAML confessional. No Python for dplyr pipelines.
-:::
-
-::: notes
-How does it know? dbplyr already built the query tree; {dplyneage} just finally reads it, in pure R. That is why attribution is exact rather than best-effort string matching. Plain data frames have no tree to walk; wrap one with dbplyr::tbl_lazy(df, name = "df") and the identical pipeline becomes traceable.
-:::
-
-## And it travels beyond R {visibility="uncounted"}
-
-```{r}
-#| eval: false
-lineage_json(lake_lineage, "lineage.json")   # commit it next to the code, diff it in CI
-lineage_check(old, new)                      # fail the PR that rewires gold.avg_mpg
-lineage_openlineage(lake_lineage)            # OpenLineage JSON: DataHub, Marquez, OpenMetadata
-```
-
-<br/>
-
-Lineage you can treat as **data**:
-
-document it, catalog it, gate pull requests on it.
-
-::: notes
-For the data engineers in the room: this speaks the standards your platform tools already ingest, so R stops being the opaque box in the org's lineage graph. lineage_mermaid() renders on GitHub and in Quarto docs; lineage_graphml() opens in Gephi, yEd, and igraph.
-:::
-
-## Lineage × time travel {visibility="uncounted"}
-
-Lineage is a property of your **code**; snapshots are a property of your **data**.
-
-```{r}
-#| eval: false
-get_ducklake_table_version("silver.vehicles", version = 3) |>
-  group_by(cyl) |>
-  summarise(avg_mpg = mean(mpg, na.rm = TRUE)) |>
-  extract_lineage()   # same DAG as today
-```
-
-<br/>
-
-The audit question this answers: "for the June submission, what fed this estimate, in the data as of June?" Both packages, four lines.
-
-::: notes
-Lineage is a property of your code; snapshots are a property of your data. Time travel changes what the data was, never where it came from, so a past snapshot yields the same DAG as today for the same code. To keep the derivation with the rows, store the lineage on the commit itself: pass lineage_json(..., pretty = FALSE) as commit_extra_info when a layer is written, and lineage_from_json() reads it back as of any snapshot.
-:::
-
-## The same question, without a time machine {.center visibility="uncounted"}
-
-**Duke, 2006.** A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work.
-
-When MD Anderson biostatisticians Keith Baggerly and Kevin Coombes tried to verify it, the forensic work ran to about **1,500 hours**. What they found: sensitive/resistant labels reversed, gene lists shifted off by one row.
-
-Three clinical trials ran on it before Duke shut them down. Ten papers retracted.
-
-::: {.statement style="font-size: 1em; margin-top: .6em;"}
-That is the price of a missing paper trail.
-:::
-
-::: {.quiet style="text-align: center; margin-top: .6em;"}
-Baggerly & Coombes (2009), *Annals of Applied Statistics*. Their data and code: still public, still reproducible.
-:::
-
-::: notes
-Duke, 2006. A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work. When two MD Anderson biostatisticians tried to verify it, the forensic work ran to about 1,500 hours: labels reversed, gene lists off by one row. Three clinical trials ran on it before Duke shut them down. Versioning would not have caught the errors by itself. What it does is make the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries. Detection stays human. That is the price of a missing paper trail.
-:::
-
-## Freeze a moment forever {visibility="uncounted"}
-
-```{r}
-#| eval: false
-# a read-only lake, pinned to the snapshot you reported from
-attach_ducklake("q3_submission", lake_path = "data/lake",
-                snapshot_version = 4, read_only = TRUE)
-```
-
-::: columns
-::: {.column width="55%"}
-```{r}
-#| echo: false
-#| fig-height: 4.2
-plot_snapshots() + theme_bttf
-```
-:::
-::: {.column width="45%"}
-![](images/stills/clock-tower.webp){width="380"}
-
-::: {.quiet}
-In my world of prostate cancer clinical trials, "trust me" is not an audit trail. *This* is what a regulator can read.
-:::
-:::
-:::
-
-::: notes
-At PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
