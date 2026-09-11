@@ -80,23 +80,26 @@ theme_bttf <- ggplot2::theme(
 
 ## Unversioned data fades {.center}
 
+::: {.fragment .custom .in-place-edit}
 ::: {.columns style="align-items: center;"}
 ::: {.column style="width: 55%;"}
 ```{=html}
 <div class="terminal" style="font-size: .6em;">
-<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> analysis.R &nbsp;·&nbsp; git: unchanged since Mar 14</div>
+<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/sales-report/analysis.R &nbsp;·&nbsp; git: last commit Mar 14</div>
 <div class="term-body" style="white-space: pre;">df &lt;- read_excel(
   "data/2026-03-14/export_v2_FINAL.xlsx"
-)</div>
+)
+sum(df$revenue)
+<span class="dim">#&gt; [1]</span> <span class="before">4812300</span><span class="after hl">4633150</span></div>
 </div>
 <div class="terminal" style="font-size: .6em; margin-top: .8em;">
-<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/projects/q3-report/data</div>
+<div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span> ~/sales-report/data</div>
 <div class="term-body" style="white-space: pre;"><span class="dim">2025-12-01/</span>
 <span class="dim">2026-01-15/</span>
 2026-03-14/
   export.csv            <span class="dim">Mar 14</span>
   export_v2.csv         <span class="dim">Mar 14</span>
-  export_v2_FINAL.xlsx  <span class="hl">Jun  2  ← edited in place</span></div>
+  export_v2_FINAL.xlsx  <span class="before dim">Mar 14</span><span class="after hl">Jun  2  ← edited in place</span></div>
 </div>
 ```
 :::
@@ -107,13 +110,14 @@ theme_bttf <- ggplot2::theme(
 </div>
 :::
 :::
+:::
 
-::: {.auto-fade-in style="text-align: center; margin-top: .4em;"}
+::: {.fragment style="text-align: center; margin-top: .4em;"}
 "Why did this number **change**?" [You have no idea. Somewhere in the past, the timeline **skewed**.]{.quiet}
 :::
 
 ::: notes
-Most of the room runs this setup: a dated folder for each data drop, a script in git that reads one of them. Then someone opens the spreadsheet, fixes a cell, and saves. Git sees nothing. It only watches the code. In September a colleague asks why a number changed since March, and you have no idea. The folder says March 14, the file says June 2, and nothing says who or why. Filenames are our version control, Slack is our audit log, memory is our lineage system. The question is Marty's alternate 1985: someone changed the data upstream and you can't see where the timeline forked. Pays off in chapter two. Biff's small tweak is this June 2 edit made inside a lake, where there is no such thing as an in-place edit: every change lands as a new snapshot with an author and a message, and the old rows stay readable. The spreadsheet itself is what bronze is for: load it as received under an authored commit, and when an edited copy shows up later, the difference between the two loads is a query.
+Two clicks. The slide opens on March: a dated folder for each data drop, a script in git that reads one of them, and the number it printed. Most of the room runs this setup. First click, June. Someone opens the spreadsheet, fixes a cell, and saves. Same code, git shows no change, and the number is different. The only trace is a modified date three months after the folder's, and the photo starts to fade. Second click, September. A colleague asks why the number changed since March, and you have no idea. Nothing says who or why. Filenames are our version control, Slack is our audit log, memory is our lineage system. The question is Marty's alternate 1985: someone changed the data upstream and you can't see where the timeline forked. Pays off in chapter two. Biff's small tweak is this June edit made inside a lake, where there is no such thing as an in-place edit: every change lands as a new snapshot with an author and a message, and the old rows stay readable. The spreadsheet itself is what bronze is for: load it as received under an authored commit, and when an edited copy shows up later, the difference between the two loads is a query.
 :::
 
 ## We solved this once, for code {.center}

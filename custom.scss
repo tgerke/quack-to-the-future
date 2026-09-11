@@ -121,13 +121,16 @@ $code-block-border-color: #262b47;
     box-shadow: 0 14px 40px rgba(0,0,0,.55);
     img { margin: 0; display: block; }
   }
-  // Cold open: the photo starts fading the moment the slide appears and takes
-  // 20s, about as long as telling the story over it; the caption fades in
-  // beneath it. Scoped to .present so it replays on revisit.
+  // Cold open, two clicks. The slide opens on the March state. The first click
+  // reveals the in-place edit: .in-place-edit is a custom fragment (visible from
+  // the start, only gains .visible), which swaps the .before/.after spans and
+  // starts the 7s photo fade. Stepping back removes .visible and restores March.
+  .fragment.custom.in-place-edit { opacity: 1; visibility: inherit; }
+  .in-place-edit .after { display: none; }
+  .in-place-edit.visible .after { display: inline; animation: after-fade-in .5s ease; }
+  .in-place-edit.visible .before { display: none; }
   .auto-fade-out { opacity: 1; }
-  section.present .auto-fade-out { animation: photo-fade-out 20s linear forwards; }
-  .auto-fade-in { opacity: 0; }
-  section.present .auto-fade-in { animation: caption-fade-in 2.4s ease 2s forwards; }
+  .in-place-edit.visible .auto-fade-out { animation: photo-fade-out 7s linear forwards; }
 
   // ---- Terminal / file-listing mock ---------------------------------------
   .terminal {
@@ -263,8 +266,9 @@ $code-block-border-color: #262b47;
   }
 }
 
-// Cold-open auto-fade timing; end states match the print-pdf overrides below.
+// Cold-open animations; the PDF shows the end state (after the edit, photo faded).
 @keyframes photo-fade-out { to { opacity: .15; filter: grayscale(.9); } }
-@keyframes caption-fade-in { to { opacity: 1; } }
+@keyframes after-fade-in { from { opacity: 0; } }
 .reveal.print-pdf .auto-fade-out { opacity: .15; filter: grayscale(.9); }
-.reveal.print-pdf .auto-fade-in { opacity: 1; }
+.reveal.print-pdf .in-place-edit .after { display: inline; }
+.reveal.print-pdf .in-place-edit .before { display: none; }
