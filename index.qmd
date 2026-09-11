@@ -214,12 +214,8 @@ data/lake/<br/>
 :::
 :::
 
-::: {.fragment fragment-index=2 style="text-align: center; margin-top: .5em;"}
-[It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it.]{.orange}
-:::
-
 ::: notes
-A DuckLake is a lakehouse that fits in a folder. Parquet files hold the rows, and a plain SQL database is the catalog: every table, every column, every change. DuckDB, the analytical database that already lives inside your R session, does the work, and {ducklake} puts dplyr on top. You can ls your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own. Same pattern as Iceberg and Delta, minus the cluster and the platform team. The catalog can be DuckDB, SQLite, or Postgres, and the files can sit on S3; this is the version of the pattern that fits in a folder. It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it. The regular car is the install, which looks like any other R package. No server, nothing for IT to provision, and dbplyr already speaks it, so your dplyr code is the SQL. The absurd part is the engine: columnar, vectorized execution in batches of a few thousand values instead of row by row, parallel across cores, and it spills to disk, so it can scan data larger than RAM without falling over. That is why one laptop clears benchmarks that were built assuming a cluster. Nothing about the install suggests that capability is in there.
+A DuckLake is a lakehouse that fits in a folder. Parquet files hold the rows, and a plain SQL database is the catalog: every table, every column, every change. DuckDB, the analytical database that already lives inside your R session, does the work, and {ducklake} puts dplyr on top. You can ls your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own. Same pattern as Iceberg and Delta, minus the cluster and the platform team. The catalog can be DuckDB, SQLite, or Postgres, and the files can sit on S3; this is the version of the pattern that fits in a folder. DuckDB installs like any other R package: no server, nothing for IT to provision, and dbplyr already speaks it, so your dplyr code is the SQL. The engine underneath is columnar and vectorized, parallel across cores, and it spills to disk, so it can scan data larger than RAM without falling over. That is why one laptop clears benchmarks that were built assuming a cluster.
 :::
 
 ## Attach a lake
@@ -255,28 +251,39 @@ This ran for real when the deck rendered. If you remember one code slide from th
 </div>
 ```
 
+::: {style="text-align: center; margin-top: .3em;"}
+Each layer is a **schema**: a named group of tables inside the lake. On disk, it's a folder.
+:::
+
 ::: {.fragment style="text-align: center; margin-top: .3em;"}
 Keep raw data sacred, refine in stages, analyze from gold. Each hop is one versioned, documented transaction.
 :::
 
-::: {.fragment style="text-align: center; margin-top: .3em;"}
-Each layer is a **schema**: a named group of tables inside the lake. On disk, it's a folder.
-:::
-
 ::: notes
-The plan is a medallion pipeline, which is staged refinement with rules. Bronze is the raw data as received, and nothing in it is ever edited. That is the answer to the spreadsheet from the opening: load the file as received, under an authored commit, and the lake's copy is the record of what arrived and when. Silver is cleaned and conformed. Gold is analysis-ready. Each hop is one versioned, documented transaction. Each layer is a schema, a named group of tables inside the lake, and on disk it is a folder: those were the three folders in the listing a couple of slides back. From here on every table name carries its layer, as in bronze.vehicles.
+The plan is a medallion pipeline: three layers, and each layer is a schema, a named group of tables inside the lake. On disk it is a folder: those were the three folders in the listing a couple of slides back. From here on every table name carries its layer, as in bronze.vehicles. Bronze is the raw data as received, and nothing in it is ever edited. That is the answer to the spreadsheet from the opening: load the file as received, under an authored commit, and the lake's copy is the record of what arrived and when. Silver is cleaned and conformed. Gold is analysis-ready. Keep raw data sacred, refine in stages, analyze from gold. Each hop is one versioned, documented transaction.
 :::
 
-## Load the raw layer
+## Create the layers
 
 ```{r}
 #| message: true
 with_transaction({
-  create_schema("bronze"); create_schema("silver"); create_schema("gold")
+  create_schema("bronze")
+  create_schema("silver")
+  create_schema("gold")
 }, author = "marty", commit_message = "Create medallion layers")
 ```
 
 ::: {.fragment}
+Everything inside `with_transaction()` lands as one snapshot. If any step fails, nothing lands.
+:::
+
+::: notes
+This is the signature move in {ducklake}: the transaction wrapper is where who and why get recorded. Every write from here on has a name attached. Three schemas, one commit. Everything inside with_transaction() lands as one snapshot, and if any step fails, nothing lands. An R error partway through, a DuckLake error like a type that won't cast, or a conflicting commit from another writer: any of those rolls the whole transaction back, so a half-finished change never reaches the lake. Each layer gets its own schema, which keeps bronze, silver, and gold one lineage under three roofs, and lets you restrict access to the raw data at the schema level.
+:::
+
+## Load the raw layer
+
 ```{r}
 #| message: true
 with_transaction(
@@ -284,15 +291,13 @@ with_transaction(
   author = "marty", commit_message = "Load raw vehicle data"
 )
 ```
-:::
 
 ::: {.fragment}
-- Everything inside `with_transaction()` lands as one snapshot. If any step fails, nothing lands.
-- Every commit carries an **author** and a **message**, and the confirmation names the snapshot
+Every commit carries an **author** and a **message**, and the confirmation names the snapshot.
 :::
 
 ::: notes
-This is the signature move in {ducklake}: the transaction wrapper is where who and why get recorded. Every write from here on has a name attached. First the three schemas, one commit. Then the raw vehicle data lands in bronze, one commit. Everything inside with_transaction() lands as one snapshot, and if any step fails, nothing lands. An R error partway through, a DuckLake error like a type that won't cast, or a conflicting commit from another writer: any of those rolls the whole transaction back, so a half-finished change never reaches the lake. Each layer gets its own schema, which keeps bronze, silver, and gold one lineage under three roofs, and lets you restrict access to the raw data at the schema level. The snapshot number in the confirmation is the version number we'll travel to later. Snapshot 0 is the lake's creation.
+The raw vehicle data lands in bronze, as received, one commit. Every commit carries an author and a message, and the confirmation names the snapshot. That snapshot number is the version number we'll travel to later. Snapshot 0 is the lake's creation.
 :::
 
 ## Derive silver and gold
@@ -354,16 +359,16 @@ The lake remembers everything: query the past, see **exactly what changed**, und
 Chapter two: drive the time machine. Surviving Biff, reading history, and fixing the timeline without erasing anyone from the log.
 :::
 
-## Then Biff gets write access
+## Biff gets write access
 
 ```{r}
 #| message: true
-efficient_cars <- get_ducklake_table("silver.vehicles") |>
+butthead_cars <- get_ducklake_table("silver.vehicles") |>
   filter(mpg >= 20) |>         # Biff hates the environment
   select(model)
 
 with_transaction(
-  rows_delete(get_ducklake_table("silver.vehicles"), efficient_cars, by = "model"),
+  rows_delete(get_ducklake_table("silver.vehicles"), butthead_cars, by = "model"),
   author = "biff", commit_message = "small tweak"
 )
 ```
@@ -384,11 +389,11 @@ stopifnot(
 ```
 
 ::: {.fragment}
-32 rows → 18 rows, on a Friday afternoon, labeled **"small tweak."**
+32 rows → 18 rows, labeled **"small tweak."**
 :::
 
 ::: notes
-Every team has a Biff. Sometimes Biff is you, at 4:47 on a Friday. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. 32 rows become 18, labeled "small tweak." This is the spreadsheet edit from the opening, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. You can't prevent the mistake. You can make it visible, attributed, and reversible.
+Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. 32 rows become 18, labeled "small tweak." This is the spreadsheet edit from the opening, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. You can't prevent the mistake. You can make it visible, attributed, and reversible.
 :::
 
 ## "What happened?" is now a query
@@ -410,12 +415,8 @@ n_biff_deleted <- get_table_changes("silver.vehicles", start = 5, end = 5) |>
 All `r n_biff_deleted` deleted rows, with the values they had **before** Biff touched them.
 :::
 
-::: {.fragment}
-The question from the opening has an answer now: not a guess, the *rows*.
-:::
-
 ::: notes
-DuckLake calls this the change feed: every insert, delete, and update between any two snapshots, with the values before and after, as a lazy table you filter with dplyr. Snapshot 5 is the number Biff's confirmation printed on the last slide. Start and end are both 5 because the question is about that one commit; start = 2, end = 5 would give you everything since the raw load. Here are all 14 deleted rows, with the values they had before Biff touched them. The question from the opening has an answer now: not a guess, the rows.
+DuckLake calls this the change feed: every insert, delete, and update between any two snapshots, with the values before and after, as a lazy table you filter with dplyr. Snapshot 5 is the number Biff's confirmation printed on the last slide. Start and end are both 5 because the question is about that one commit; start = 2, end = 5 would give you everything since the raw load. Here are all 14 deleted rows, with the values they had before Biff touched them.
 :::
 
 ## Fixing the timeline
@@ -519,20 +520,16 @@ This is the almanac lesson: changing upstream data without knowing the downstrea
 | {ducklake} | *when / who / why* did tables change? | every write is an authored, versioned commit |
 | {dplyneage} | *where* did each column come from? | exact lineage from your dplyr code |
 
-::: {.fragment}
-The recipe is small: an **open format**, a **catalog**, and writes that land as **commits**. DuckLake is the road I took; Iceberg and Delta go to the same place.
-:::
-
 ::: {.fragment .statement style="font-size: 1.05em; margin-top: .5em;"}
 Take one pipeline you own. Put its tables in a lake, with **authored commits**.
 :::
 
 ::: {.quiet style="text-align: center; margin-top: .7em; font-family: 'Fira Code', monospace;"}
-`install.packages("ducklake")` · `pak::pak("tgerke/dplyneage")`<br/>github.com/tgerke/quack-to-the-future
+[tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r) · [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)<br/>slides: [github.com/tgerke/quack-to-the-future](https://github.com/tgerke/quack-to-the-future)
 :::
 
 ::: notes
-So, the whole paper trail. What changed, who changed it, and why: that is {ducklake}, where every write is an authored, versioned commit. Where every column came from: that is {dplyneage}, exact lineage from your dplyr code. They compose, because both work on lazy tables: query a past snapshot, extract lineage on it, same DAG. The recipe underneath is small: an open format, a catalog, and writes that land as commits. DuckLake is the road I took; Iceberg and Delta go to the same place. The ask is Monday-sized. Take one pipeline you already own and put its tables in a lake, with authored commits. Thirty minutes, and reversible. Your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
+So, the whole paper trail. What changed, who changed it, and why: that is {ducklake}, where every write is an authored, versioned commit. Where every column came from: that is {dplyneage}, exact lineage from your dplyr code. They compose, because both work on lazy tables: query a past snapshot, extract lineage on it, same DAG. The ask is Monday-sized. Take one pipeline you already own and put its tables in a lake, with authored commits. Thirty minutes, and reversible. Your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
 :::
 
 # Backup {.divider visibility="uncounted"}
