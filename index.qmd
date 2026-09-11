@@ -224,7 +224,7 @@ A DuckLake is a lakehouse that fits in a folder. Parquet files hold the rows, an
 #| output: false
 library(ducklake)
 
-attach_ducklake("quack_lake", lake_path = "data/lake")
+attach_ducklake("quack_lake", lake_path = "data/lake", author = "doc")
 ```
 
 <br/>
@@ -236,7 +236,7 @@ That's a working data lake in a folder. Every write from here is transactional a
 :::
 
 ::: notes
-This ran for real when the deck rendered. If you remember one code slide from this talk, make it this one. One call opens a lake, and creates it first if nothing is at that path. The DuckLake extension downloads itself the first time you attach and tells you where it went, so there is no install step. That's a working data lake in a folder, and every write from here is transactional and versioned. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine. A team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
+This ran for real when the deck rendered. If you remember one code slide from this talk, make it this one. One call opens a lake, and creates it first if nothing is at that path, with Doc on record as the one who built it. The DuckLake extension downloads itself the first time you attach and tells you where it went, so there is no install step. That's a working data lake in a folder, and every write from here is transactional and versioned. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine. A team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
 :::
 
 ## The plan: a medallion pipeline
@@ -346,7 +346,7 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
 ::: notes
-This output is real; it was generated when the deck rendered. Snapshot 0 is the lake's creation, and every row after it is a commit with an author and a message. Your data has a git log now. Six months from now, "why did this change?" has an answer you can query. The lake exists, and it remembers. Chapter two is what the remembering buys you.
+This output is real; it was generated when the deck rendered. Snapshot 0 is the lake's creation, and every row, that one included, is a commit with an author and a message. Your data has a git log now. Six months from now, "why did this change?" has an answer you can query. The lake exists, and it remembers. Chapter two is what the remembering buys you.
 :::
 
 # Trip II: drive the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
