@@ -223,7 +223,7 @@ That's a working data lake in a folder. Every write from here is transactional a
 :::
 
 ```{=html}
-<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+<img src="images/stills/doc.webp" class="corner-headshot" alt="Doc Brown"/>
 ```
 
 ::: notes
@@ -270,7 +270,7 @@ Everything inside `with_transaction()` lands as one snapshot. If any step fails,
 :::
 
 ```{=html}
-<img src="images/stills/marty.png" class="corner-headshot" alt="Marty McFly"/>
+<img src="images/stills/marty.webp" class="corner-headshot" alt="Marty McFly"/>
 ```
 
 ::: notes
@@ -292,7 +292,7 @@ Every commit carries an **author** and a **message**, and the confirmation names
 :::
 
 ```{=html}
-<img src="images/stills/marty.png" class="corner-headshot" alt="Marty McFly"/>
+<img src="images/stills/marty.webp" class="corner-headshot" alt="Marty McFly"/>
 ```
 
 ::: notes
@@ -328,7 +328,7 @@ with_transaction(create_table(gold, "gold.efficiency_by_cyl"),
 :::
 
 ```{=html}
-<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+<img src="images/stills/doc.webp" class="corner-headshot" alt="Doc Brown"/>
 ```
 
 ::: notes
@@ -396,7 +396,7 @@ stopifnot(
 :::
 
 ```{=html}
-<img src="images/stills/biff.png" class="corner-headshot" alt="Biff Tannen"/>
+<img src="images/stills/biff.webp" class="corner-headshot" alt="Biff Tannen"/>
 ```
 
 ::: notes
@@ -448,7 +448,7 @@ You fix the timeline **without erasing anyone from the photo**.
 :::
 
 ```{=html}
-<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+<img src="images/stills/doc.webp" class="corner-headshot" alt="Doc Brown"/>
 ```
 
 ::: notes
