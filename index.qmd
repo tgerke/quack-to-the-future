@@ -536,7 +536,7 @@ Take one pipeline you own. Put its tables in a lake, with **authored commits**.
 :::
 
 ::: {.quiet style="text-align: center; margin-top: .7em; font-family: 'Fira Code', monospace;"}
-[tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r) · [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)<br/>slides: [github.com/tgerke/quack-to-the-future](https://github.com/tgerke/quack-to-the-future)
+[tgerke.github.io/ducklake-r](https://tgerke.github.io/ducklake-r) · [tgerke.github.io/dplyneage](https://tgerke.github.io/dplyneage)<br/>slides: [tgerke.github.io/quack-to-the-future](https://tgerke.github.io/quack-to-the-future)
 :::
 
 ::: notes
