@@ -73,7 +73,7 @@ theme_bttf <- ggplot2::theme(
 :::
 
 ::: notes
-"Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data." Ironically, although this session is called from laptop to cluster, I'm going to describe a lake house approach which in many cases can enable the reverse: going from cluster to laptop. Two numbers if it comes up in Q&A: the median scan in Redshift and Snowflake reads about 100 MB and the 99.9th percentile reads under 300 GB, and the cheapest MacBook Apple sells finished all of ClickBench cold in under a minute, up to 2.8 times faster than the cloud instances it was measured against. Full number bank is on the lakehouse slide.
+Hi, I'm Travis. I lead applied intelligence at the Prostate Cancer Clinical Trials Consortium, and this talk is about time travel for your data. Ironically, this session is called from laptop to cluster, and I'm going to describe a lakehouse approach that in many cases enables the reverse: going from cluster to laptop.
 :::
 
 # The problem {.divider visibility="hidden"}
@@ -117,7 +117,7 @@ sum(df$revenue)
 :::
 
 ::: notes
-Two clicks. The slide opens on March: a dated folder for each data drop, a script in git that reads one of them, and the number it printed. Most of the room runs this setup. First click, June. Someone opens the spreadsheet, fixes a cell, and saves. Same code, git shows no change, and the number is different. The only trace is a modified date three months after the folder's, and the photo starts to fade. Second click, September. A colleague asks why the number changed since March, and you have no idea. Nothing says who or why. Filenames are our version control, Slack is our audit log, memory is our lineage system. The question is Marty's alternate 1985: someone changed the data upstream and you can't see where the timeline forked. Pays off in chapter two. Biff's small tweak is this June edit made inside a lake, where there is no such thing as an in-place edit: every change lands as a new snapshot with an author and a message, and the old rows stay readable. The spreadsheet itself is what bronze is for: load it as received under an authored commit, and when an edited copy shows up later, the difference between the two loads is a query.
+This setup probably looks familiar. A dated folder for each data drop, a script in git that reads one of them, and the number it printed. Then in June, someone opens the spreadsheet, fixes a cell, and saves. Same code. Git shows no change. And the number is different. The only trace is a modified date three months after the folder's. In September a colleague asks why the number changed since March, and you have no idea. Nothing says who or why. Filenames are our version control, Slack is our audit log, memory is our lineage system. This is Marty's alternate 1985: someone changed the data upstream, and you can't see where the timeline forked.
 :::
 
 ## We solved this once, for code {.center}
@@ -144,6 +144,22 @@ For **data**, we do our best:
 Data pipelines need a paper trail, what changed, who changed it, why, and where every column came from. 
 :::
 
+# Trip I: build the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
+
+<div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
+<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
+<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
+<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
+</div>
+
+::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
+Two lines of R to a lake where every write is an **authored commit**.
+:::
+
+::: notes
+Chapter one: build the time machine. First, what we're building. Then the build itself, which is two lines of R: load the package, attach a lake. {ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out.
+:::
+
 ## The lakehouse, in one slide
 
 ::: {.incremental}
@@ -167,25 +183,7 @@ The catch: built for Spark clusters, run by platform teams.
 :::
 
 ::: notes
-If pressed on the bullets: the file format is technically pluggable (Iceberg also takes ORC and Avro) but Parquet is the near-universal choice, and every flavor has a catalog in function if not in name. Delta keeps a transaction log beside the data, Iceberg uses metadata files plus a catalog service, and DuckLake uses a plain SQL database, which is the punchline two slides ahead. "Spark clusters" stands in for the JVM stack nobody in this room runs. The laptop line lives on the title slide now, so don't say it again here; DuckDB reaches for a cluster only when the data outgrows one machine.
-
-If pressed on scale. The Iceberg catalog tier alone: Apache Polaris ships production Helm values of 4 CPU and 8 GiB per pod at three replicas, plus its own Postgres, and the in-memory default is documented as unfit for production. The older Hive Metastore path is no lighter, with Cloudera calling the 256 MB default heap inadequate, HiveServer2 starting at 4 GB, and a 16 GB cap per instance because garbage collection pauses get long. A Spark or Trino cluster sits on top of that. The read path costs you too: three layers of metadata files read in sequence at roughly 100 ms a request, so half a second passes before you know which Parquet files to open. DuckLake asks one SQL question and gets one answer in milliseconds. Writes go the same way, about one transaction per second for Iceberg and Delta against roughly 100 for DuckLake, and Postgres alone sustains thousands. Every Iceberg insert also lands three or four files, which is how small-file cleanup becomes someone's job. On whether one machine holds: the cheapest MacBook, 8 GB of RAM with DuckDB capped at 5, ran all of ClickBench cold in 59.7 seconds, up to 2.8 times faster than the cloud instances it was measured against, and hot it came within 13 percent of a 16-vCPU box with four times the memory. TPC-DS SF100 on that same laptop: 1.63 second median, 15.5 minutes for the suite. A Galaxy S24 Ultra finished TPC-H SF100 over 30 GB in 235 seconds while an AWS r6id.large took 570.8. A 2012 MacBook Pro cleared all 22 TPC-H queries against a 265 GB database. Demand side: the median scan in Redshift and Snowflake reads about 100 MB, the 99.9th percentile under 300 GB.
-:::
-
-# Trip I: build the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
-
-<div class="time-circuits" style="font-size: .8em; margin-top: 1em;">
-<div class="tc-row tc-dest"><span class="tc-label">Destination</span><span class="tc-value">A VERSIONED LAKE</span></div>
-<div class="tc-row tc-pres"><span class="tc-label">Present time</span><span class="tc-value">library(ducklake)</span></div>
-<div class="tc-row tc-last"><span class="tc-label">Last time departed</span><span class="tc-value">FLAT FILES · 1985</span></div>
-</div>
-
-::: {style="text-align: center; font-size: .9em; color: #c0c5ce; margin-top: 1em;"}
-Two lines of R to a lake where every write is an **authored commit**.
-:::
-
-::: notes
-Act break, chapter one: build the machine. One slide on what a DuckLake is, then the build itself is two lines: load the package, attach a lake. The extension downloads itself the first time a lake is attached, so there is no install step to show. "{ducklake} is an R package that makes DuckLake feel native: dplyr in, versioned lake out."
+Here is the lakehouse in one slide. Your tables live as open files, almost always Parquet: cheap, columnar, readable by everything. A catalog tracks which files make up each table, at each version. Writes are transactions: atomic, versioned, never left in a half-state. This is what Iceberg and Delta Lake do for the Spark world. The catch is that they were built for Spark clusters and run by platform teams. This room was priced out of the solution, not the problem. You don't need 1.21 gigawatts for this.
 :::
 
 ## What a DuckLake is
@@ -221,9 +219,7 @@ data/lake/<br/>
 :::
 
 ::: notes
-The "aha" for skeptics: you can `ls` your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own. Same pattern as Iceberg and Delta, minus the cluster and the platform team. The catalog can be DuckDB, SQLite, or Postgres, and the files can sit on S3; this is the version of the pattern that fits in a folder.
-
-One-slide DuckDB primer for those who haven't touched it: `install.packages("duckdb")`, no server, nothing for IT to provision, and dbplyr already speaks it, so your dplyr code is the SQL. The DeLorean line, explained: the "regular car" part is the install, which looks like any other R package. The "absurd when you floor it" part is the engine: columnar, vectorized execution in batches of a few thousand values instead of row by row, parallel across cores, and it spills to disk so it can scan data larger than RAM without falling over. That is why one laptop clears benchmarks that were built assuming a cluster (the numbers on the lakehouse slide). Nothing about the install suggests that capability is in there.
+A DuckLake is a lakehouse that fits in a folder. Parquet files hold the rows, and a plain SQL database is the catalog: every table, every column, every change. DuckDB, the analytical database that already lives inside your R session, does the work, and {ducklake} puts dplyr on top. You can ls your lakehouse. Files you can see, a catalog you can query. Everything the fancy formats promise, at a scale one person can own. Same pattern as Iceberg and Delta, minus the cluster and the platform team. The catalog can be DuckDB, SQLite, or Postgres, and the files can sit on S3; this is the version of the pattern that fits in a folder. It's the DeLorean of databases: looks like a regular car, does something absurd when you floor it. The regular car is the install, which looks like any other R package. No server, nothing for IT to provision, and dbplyr already speaks it, so your dplyr code is the SQL. The absurd part is the engine: columnar, vectorized execution in batches of a few thousand values instead of row by row, parallel across cores, and it spills to disk, so it can scan data larger than RAM without falling over. That is why one laptop clears benchmarks that were built assuming a cluster. Nothing about the install suggests that capability is in there.
 :::
 
 ## Attach a lake
@@ -244,7 +240,7 @@ That's a working data lake in a folder. Every write from here is transactional a
 :::
 
 ::: notes
-This executes for real at render. Emphasize the on-ramp: if they remember one code slide, it's this one. The DuckLake extension downloads itself the first time a lake is attached, with a message saying where it went; `install_ducklake()` exists only to fetch it ahead of time for containers and CI. If asked about safety: `create = FALSE` makes a mistyped path an error instead of a new, empty lake. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine; a team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
+This ran for real when the deck rendered. If you remember one code slide from this talk, make it this one. One call opens a lake, and creates it first if nothing is at that path. The DuckLake extension downloads itself the first time you attach and tells you where it went, so there is no install step. That's a working data lake in a folder, and every write from here is transactional and versioned. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine. A team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
 :::
 
 ## The plan: a medallion pipeline
@@ -268,7 +264,7 @@ Each layer is a **schema**: a named group of tables inside the lake. On disk, it
 :::
 
 ::: notes
-Medallion in 20 seconds: it's just staged refinement with rules, and the demo follows these three hops. Bronze is also the answer to the opening's edited spreadsheet: load the file as received, under an authored commit, and the lake's copy is the record of what arrived and when. Schema is the word the code uses from here on: create_schema("bronze") makes the layer, and every table name carries it, as in bronze.vehicles. The folder listing on the DuckLake slide is these three schemas on disk.
+The plan is a medallion pipeline, which is staged refinement with rules. Bronze is the raw data as received, and nothing in it is ever edited. That is the answer to the spreadsheet from the opening: load the file as received, under an authored commit, and the lake's copy is the record of what arrived and when. Silver is cleaned and conformed. Gold is analysis-ready. Each hop is one versioned, documented transaction. Each layer is a schema, a named group of tables inside the lake, and on disk it is a folder: those were the three folders in the listing a couple of slides back. From here on every table name carries its layer, as in bronze.vehicles.
 :::
 
 ## Load the raw layer
@@ -296,7 +292,7 @@ with_transaction(
 :::
 
 ::: notes
-The signature ducklake API move: the transaction wrapper is where who-and-why get recorded. Every write from here on has a name attached. "If any step fails, nothing lands" is atomicity: an R error partway through the block, a DuckLake error such as a type that will not cast, or a conflicting commit from another writer that DuckLake could not retry past all roll the whole transaction back, so a half-finished change never reaches the lake. Each layer gets a schema of its own, which keeps bronze, silver, and gold one lineage under three roofs and lets access to raw data be restricted at the schema level. The snapshot number in the confirmation is the version number that time travel uses in chapter two; snapshot 0 is the lake's creation.
+This is the signature move in {ducklake}: the transaction wrapper is where who and why get recorded. Every write from here on has a name attached. First the three schemas, one commit. Then the raw vehicle data lands in bronze, one commit. Everything inside with_transaction() lands as one snapshot, and if any step fails, nothing lands. An R error partway through, a DuckLake error like a type that won't cast, or a conflicting commit from another writer: any of those rolls the whole transaction back, so a half-finished change never reaches the lake. Each layer gets its own schema, which keeps bronze, silver, and gold one lineage under three roofs, and lets you restrict access to the raw data at the schema level. The snapshot number in the confirmation is the version number we'll travel to later. Snapshot 0 is the lake's creation.
 :::
 
 ## Derive silver and gold
@@ -328,7 +324,7 @@ with_transaction(create_table(gold, "gold.efficiency_by_cyl"),
 :::
 
 ::: notes
-No new verbs to learn: select, mutate, group_by, summarise. The only additions are the bookends: get a table, create a table, wrapped in a documented transaction. Each recipe is kept in a variable on purpose, because the recipe that builds a layer is also its lineage; chapter three draws the diagram from these two objects. Gold is a summary here so the diagram gets an aggregation edge and the table is three rows anyone can read.
+No new verbs to learn: select, mutate, group_by, summarise. The only additions are the bookends: get a table, create a table, wrapped in a documented transaction. get_ducklake_table() gives you a lazy table, and create_table() runs the query inside DuckDB and writes the result into the lake, so the rows never pass through R. I keep each recipe in a variable on purpose, because the recipe that builds a layer is also its lineage, and in chapter three we draw the diagram from these two objects.
 :::
 
 ## Your data has a git log now
@@ -345,7 +341,7 @@ Six months from now, *"why did this change?"* has an **answer you can query**.
 :::
 
 ::: notes
-Pause and let them read; this output is real, generated when the deck rendered, and snapshot 0 is the lake's creation. This is the audit trail slide, and the button on chapter one: the lake exists and it remembers. Chapter two is what the remembering buys you.
+This output is real; it was generated when the deck rendered. Snapshot 0 is the lake's creation, and every row after it is a commit with an author and a message. Your data has a git log now. Six months from now, "why did this change?" has an answer you can query. The lake exists, and it remembers. Chapter two is what the remembering buys you.
 :::
 
 # Trip II: drive the time&nbsp;machine {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -355,7 +351,7 @@ The lake remembers everything: query the past, see **exactly what changed**, und
 :::
 
 ::: notes
-Act break, chapter two: use the machine. Surviving Biff, reading history, and fixing the timeline without erasing anyone from the log.
+Chapter two: drive the time machine. Surviving Biff, reading history, and fixing the timeline without erasing anyone from the log.
 :::
 
 ## Then Biff gets write access
@@ -392,7 +388,7 @@ stopifnot(
 :::
 
 ::: notes
-Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. You can't prevent the mistake; you can make it visible, attributed, and reversible. Callback to the opening: this is the June 2 spreadsheet edit, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. Delivery note for me: row-level operations (rows_delete, rows_update) are what the change feed on the next slide traces; a full replace_table() rewrite is a drop-and-create, so its history starts over. That's why Biff's tweak is a rows_delete rather than a filter followed by replace_table().
+Every team has a Biff. Sometimes Biff is you, at 4:47 on a Friday. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. 32 rows become 18, labeled "small tweak." This is the spreadsheet edit from the opening, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. You can't prevent the mistake. You can make it visible, attributed, and reversible.
 :::
 
 ## "What happened?" is now a query
@@ -419,7 +415,7 @@ The question from the opening has an answer now: not a guess, the *rows*.
 :::
 
 ::: notes
-The payoff of the changed-number question from the hook. DuckLake calls this the data change feed: every insert, delete, and update pre/post image between any two snapshots, as a lazy table you filter with dplyr. Where 5 comes from: it is the snapshot number Biff's confirmation printed on the last slide, and the same number is in list_table_snapshots(). Start and end are both 5 because the question is about that one commit; start = 2, end = 5 would list everything since the raw load. Why collect(): the feed is a lazy table, and printing one adds a "Source: SQL" header with the catalog's file path, so collect() brings the rows into R and prints a plain tibble.
+DuckLake calls this the change feed: every insert, delete, and update between any two snapshots, with the values before and after, as a lazy table you filter with dplyr. Snapshot 5 is the number Biff's confirmation printed on the last slide. Start and end are both 5 because the question is about that one commit; start = 2, end = 5 would give you everything since the raw load. Here are all 14 deleted rows, with the values they had before Biff touched them. The question from the opening has an answer now: not a guess, the rows.
 :::
 
 ## Fixing the timeline
@@ -444,7 +440,7 @@ You fix the timeline **without erasing anyone from the photo**.
 :::
 
 ::: notes
-Callback to the Polaroid. Any table can be read exactly as it was at any snapshot, or at any timestamp with `get_ducklake_table_asof()`; to freeze a whole session at one snapshot, attach the lake with `snapshot_version` (backup slide). Contrast with the flat-file world, where the fix is overwriting the overwrite and praying. History is append-only; even the recovery is auditable.
+Any table can be read exactly as it was at any snapshot, or at any timestamp with get_ducklake_table_asof(). Snapshot 3 never went anywhere: 32 rows. Restore rolls forward as a new snapshot, so Biff's mistake stays in the log. In the flat-file world the fix is overwriting the overwrite and praying. Here, history is append-only, and even the recovery is auditable. You fix the timeline without erasing anyone from the photo.
 :::
 
 # Trip III: trace the flux&nbsp;capacitor {.divider .center background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -462,7 +458,7 @@ Callback to the Polaroid. Any table can be read exactly as it was at any snapsho
 :::
 
 ::: notes
-Act break, chapter three. Snapshots answer what changed, who, and why. The stem has one clause left: where every column came from. SQL teams already get this from dbt and SQLMesh ("gold.avg_mpg is computed from vehicles.mpg, through these two models"); for dplyr pipelines there was nothing, so the lineage lived in your head, and your head does not survive job changes. Table-level lineage stops at "these tables are related"; column-level says this column traces to that column, via this expression, which is the version that answers real questions during an audit or a debugging session.
+Chapter three: trace the flux capacitor. Snapshots answer what changed, who, and why. That leaves one clause: where every column came from. SQL teams already get this from dbt and SQLMesh: gold.avg_mpg is computed from vehicles.mpg, through these two models. For dplyr pipelines there was nothing, so the lineage lived in your head, and your head does not survive job changes. Table-level lineage stops at "these tables are related." Column-level says this column traces to that column, via this expression, and that is the version that answers real questions in an audit or a debugging session.
 :::
 
 ## The recipe is the lineage
@@ -484,9 +480,7 @@ The two recipes from chapter one, passed under the names they were saved as. No 
 :::
 
 ::: notes
-The money demo. For one pipeline it is just `gold |> extract_lineage() |> lineage_flow()`. Where bronze comes from, since it is not in the list: each recipe's query tree names the tables it reads, so silver's tree has bronze.vehicles at its base and gold's tree has silver.vehicles. Every table a recipe reads becomes a source node, and when a source name matches a name in the list the two hops are stitched, which is how silver becomes the transform node in the middle. Bronze matches nothing in the list, so it stays a plain source on the left. Nothing is traced upstream or downstream to draw this; the graph is the recipes' own structure, and two slides on we ask that graph questions with lineage_downstream() and lineage_upstream(). Next slide is the live widget: drag a table, hover a column to highlight its connections and see the expression label (as.integer(cyl) into silver, mean(mpg) into gold), click a column to isolate everything upstream and downstream of it.
-
-For the "what's the catch" people: dbplyr already built the query tree; dplyneage reads it, in pure R, so attribution is exact rather than best-effort string matching (backup slide). Likely Q&A: "does it work on plain data frames?" A local dplyr pipeline has no query tree to walk, so no. The one-line fix is dbplyr::tbl_lazy(df, name = "df"), and the identical pipeline becomes traceable; extract_lineage() errors with exactly that pointer.
+For one pipeline it is just gold |> extract_lineage() |> lineage_flow(). Here I pass the two recipes from chapter one, under the names they were saved as. No YAML, no SQL parsing: {dplyneage} walks the query tree dbplyr already built. Bronze is not in the list, but each recipe's query tree names the tables it reads, so silver's tree has bronze.vehicles at its base and gold's tree has silver.vehicles. Every table a recipe reads becomes a source node, and when a source name matches a name in the list the two hops are stitched. That is how silver becomes the transform node in the middle, and bronze stays a plain source on the left. Nothing is traced to draw this; the graph is the recipes' own structure. On the next slide is the live widget: drag a table, hover a column to highlight its connections and see the expression, as.integer(cyl) into silver, mean(mpg) into gold, and click a column to isolate everything upstream and downstream of it.
 :::
 
 ## Before you change the past…
@@ -513,7 +507,7 @@ Impact analysis as a function call: know what a change touches **before** you ma
 :::
 
 ::: notes
-The almanac lesson: changing upstream data without knowing the downstream consequences is how you get the bad 1985. Renaming a column? Ask lineage_downstream first. Pass a bare table name instead of a column to trace every column of a table at once.
+This is the almanac lesson: changing upstream data without knowing the downstream consequences is how you get the bad 1985. What would I break if I changed mpg in bronze? lineage_downstream() tells you. Where did avg_mpg come from? lineage_upstream(). Renaming a column? Ask lineage_downstream() first. Pass a bare table name instead of a column to trace every column of a table at once. Impact analysis as a function call: you know what a change touches before you make it.
 :::
 
 # Where we're going {.divider background-gradient="radial-gradient(ellipse at 50% 120%, rgb(70 27 4), rgb(13 15 30) 62%)"}
@@ -538,7 +532,7 @@ Take one pipeline you own. Put its tables in a lake, with **authored commits**.
 :::
 
 ::: notes
-The whole close on one slide. Bring the stem back: what changed, who, why is ducklake; where every column came from is dplyneage. They compose because both are lazy tables: query a past snapshot, extract lineage on it, same DAG (backup slide). Then the recipe without the branding, so that someone who walks out and reaches for Iceberg instead of DuckLake still proves the talk worked. The ask is printed and Monday-sized: one pipeline you already own, its tables in a lake with authored commits. Thirty minutes, reversible. Maturity if asked: experimental lifecycle badges on both; ducklake 0.7.0 is on CRAN; dplyneage 0.3.1 is on GitHub; docs at tgerke.github.io/ducklake-r and tgerke.github.io/dplyneage. Spoken sign-off over this slide, slow and sincere: your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
+So, the whole paper trail. What changed, who changed it, and why: that is {ducklake}, where every write is an authored, versioned commit. Where every column came from: that is {dplyneage}, exact lineage from your dplyr code. They compose, because both work on lazy tables: query a past snapshot, extract lineage on it, same DAG. The recipe underneath is small: an open format, a catalog, and writes that land as commits. DuckLake is the road I took; Iceberg and Delta go to the same place. The ask is Monday-sized. Take one pipeline you already own and put its tables in a lake, with authored commits. Thirty minutes, and reversible. Your data's future is whatever you make it, so make it a good one. Thank you, and drive safely.
 :::
 
 # Backup {.divider visibility="uncounted"}
@@ -559,7 +553,7 @@ No parsing your SQL with regex, no YAML confessional. No Python for dplyr pipeli
 :::
 
 ::: notes
-For the "what's the catch" people: dbplyr already built the query tree; dplyneage just finally reads it. That's why attribution is exact rather than best-effort string matching. Plain data frames have no tree to walk; dbplyr::tbl_lazy(df, name = "df") wraps one so the identical pipeline becomes traceable.
+How does it know? dbplyr already built the query tree; {dplyneage} just finally reads it, in pure R. That is why attribution is exact rather than best-effort string matching. Plain data frames have no tree to walk; wrap one with dbplyr::tbl_lazy(df, name = "df") and the identical pipeline becomes traceable.
 :::
 
 ## And it travels beyond R {visibility="uncounted"}
@@ -578,7 +572,7 @@ Lineage you can treat as **data**:
 document it, catalog it, gate pull requests on it.
 
 ::: notes
-For the data engineers in the room: this speaks the standards their platform tools already ingest. R stops being the opaque box in the org's lineage graph. lineage_mermaid() renders on GitHub and in Quarto docs; lineage_graphml() opens in Gephi, yEd, and igraph.
+For the data engineers in the room: this speaks the standards your platform tools already ingest, so R stops being the opaque box in the org's lineage graph. lineage_mermaid() renders on GitHub and in Quarto docs; lineage_graphml() opens in Gephi, yEd, and igraph.
 :::
 
 ## Lineage × time travel {visibility="uncounted"}
@@ -598,7 +592,7 @@ get_ducklake_table_version("silver.vehicles", version = 3) |>
 The audit question this answers: "for the June submission, what fed this estimate, in the data as of June?" Both packages, four lines.
 
 ::: notes
-Kept for Q&A. Time travel changes what the data was, never where it came from, so a past snapshot yields the same DAG as today for the same code. To keep the derivation with the rows, store the lineage on the commit itself: pass lineage_json(..., pretty = FALSE) as commit_extra_info when a layer is written, and lineage_from_json() reads it back as of any snapshot (the "lineage that travels with the data" article on the dplyneage site). Detail if asked: get_ducklake_table_version() builds raw SQL under the hood, so this particular extraction runs on the sqlglot engine.
+Lineage is a property of your code; snapshots are a property of your data. Time travel changes what the data was, never where it came from, so a past snapshot yields the same DAG as today for the same code. To keep the derivation with the rows, store the lineage on the commit itself: pass lineage_json(..., pretty = FALSE) as commit_extra_info when a layer is written, and lineage_from_json() reads it back as of any snapshot.
 :::
 
 ## The same question, without a time machine {.center visibility="uncounted"}
@@ -618,7 +612,7 @@ Baggerly & Coombes (2009), *Annals of Applied Statistics*. Their data and code: 
 :::
 
 ::: notes
-One serious beat, and the only slide in the deck with nothing funny on it; part of the room knows this case, so let the recognition land. Timeline if asked: Potti and Nevins published the predictors starting 2006 in Nature Medicine; MD Anderson clinicians asked Baggerly and Coombes to vet them before adopting; the reconstruction became the 2009 Annals of Applied Statistics paper; Duke's three trials were suspended, restarted, then terminated in November 2010 as the scandal broke and Potti resigned; Retraction Watch counts ten retractions plus seven corrections, and the federal Office of Research Integrity found misconduct in 2015. The honest claim, and the reason the slide sits right after the change-feed demo: versioning would not have caught the errors by itself. It makes the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries; detection stays human. Their full supplement (raw data, R code, reports) is still served by bioinformatics.mdanderson.org, which is what would make a replay of this case possible.
+Duke, 2006. A genomic predictor promised to match each cancer patient to the chemotherapy most likely to work. When two MD Anderson biostatisticians tried to verify it, the forensic work ran to about 1,500 hours: labels reversed, gene lists off by one row. Three clinical trials ran on it before Duke shut them down. Versioning would not have caught the errors by itself. What it does is make the reconstruction cheap. The change feed shows what changed between versions, lineage narrows where to look, and the 1,500 hours become queries. Detection stays human. That is the price of a missing paper trail.
 :::
 
 ## Freeze a moment forever {visibility="uncounted"}
@@ -648,5 +642,5 @@ In my world of prostate cancer clinical trials, "trust me" is not an audit trail
 :::
 
 ::: notes
-The clinical cameo, ~20 seconds: at PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
+At PCCTC, datasets back regulatory decisions. A pinned, read-only snapshot is the difference between "we believe this is the data we used" and pointing at the commit. The clock stopped at 10:04, and you can prove it.
 :::
