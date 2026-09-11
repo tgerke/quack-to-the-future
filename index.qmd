@@ -30,10 +30,6 @@ library(dplyneage)
 unlink("data/lake", recursive = TRUE)
 dir.create("data/lake", recursive = TRUE, showWarnings = FALSE)
 
-df_vehicles <- mtcars |>
-  tibble::rownames_to_column("model") |>
-  tibble::as_tibble()
-
 # colors mirror custom.scss so ggplot output sits flush on the slide background
 theme_bttf <- ggplot2::theme(
   text = ggplot2::element_text(color = "#e8eaf2", size = 16),
@@ -286,6 +282,8 @@ This is the signature move in {ducklake}: the transaction wrapper is where who a
 
 ```{r}
 #| message: true
+df_vehicles <- mtcars |> tibble::rownames_to_column("model")
+
 with_transaction(
   create_table(df_vehicles, "bronze.vehicles"),
   author = "marty", commit_message = "Load raw vehicle data"
@@ -297,7 +295,7 @@ Every commit carries an **author** and a **message**, and the confirmation names
 :::
 
 ::: notes
-The raw vehicle data lands in bronze, as received, one commit. Every commit carries an author and a message, and the confirmation names the snapshot. That snapshot number is the version number we'll travel to later. Snapshot 0 is the lake's creation.
+The raw data is mtcars, with the car names moved out of the row names into a model column: a database keeps no row names, and that column is the key everything later hangs on. It lands in bronze, as received, one commit. Every commit carries an author and a message, and the confirmation names the snapshot. That snapshot number is the version number we'll travel to later. Snapshot 0 is the lake's creation.
 :::
 
 ## Derive silver and gold
