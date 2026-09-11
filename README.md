@@ -30,4 +30,4 @@ Slides land in `index.html`. Speaker notes are on every content slide (press `S`
 
 ## Credits
 
-Slide design riffs on Back to the Future (Universal Pictures); movie stills appear under fair-use conference-talk conventions. Deck structure follows the arc taught by the Articulation speaker-coaching team.
+Deck structure follows the arc taught by the Meadowlark (formerly Articulation) speaker-coaching team.
