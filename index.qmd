@@ -396,6 +396,11 @@ stopifnot(
 32 rows → 18 rows, labeled **"small tweak."**
 :::
 
+```{=html}
+<!-- drop a roughly square crop of Biff's face at images/stills/biff.webp; hidden until the file exists -->
+<img src="images/stills/biff.webp" class="corner-headshot" alt="Biff Tannen" onerror="this.remove()"/>
+```
+
 ::: notes
 Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of gas guzzlers, so every car that gets 20 mpg or better goes. 32 rows become 18, labeled "small tweak." This is the spreadsheet edit from the opening, done inside a lake. Same act, but here it cannot happen without leaving a snapshot, an author, and a message behind. You can't prevent the mistake. You can make it visible, attributed, and reversible.
 :::

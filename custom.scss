@@ -197,6 +197,22 @@ $code-block-border-color: #262b47;
     box-shadow: 0 0 18px rgba(#f25c05, .8);
   }
 
+  // ---- Corner headshot ----------------------------------------------------------
+  // Sections sit absolutely at the full 1280x720, so this pins to the slide's
+  // own bottom-right corner, clear of the slide number beneath it.
+  .corner-headshot {
+    position: absolute;
+    right: 40px;
+    bottom: 56px;
+    width: 150px;
+    height: 150px;
+    margin: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid $silver;
+    box-shadow: 0 10px 30px rgba(0,0,0,.6);
+  }
+
   // ---- Misc ------------------------------------------------------------------------
   .caption-credit { font-size: .4em; color: #565b78; }
   .columns { align-items: center; }
