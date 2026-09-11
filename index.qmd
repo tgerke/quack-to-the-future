@@ -380,8 +380,7 @@ stopifnot(
 :::
 
 ```{=html}
-<!-- drop a roughly square crop of Biff's face at images/stills/biff.webp; hidden until the file exists -->
-<img src="images/stills/biff.webp" class="corner-headshot" alt="Biff Tannen" onerror="this.remove()"/>
+<img src="images/stills/biff.png" class="corner-headshot" alt="Biff Tannen"/>
 ```
 
 ::: notes
