@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 460" role="img" aria-label="Flux capacitor drawn as a column lineage DAG">
+  <defs>
+    <filter id="fglow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a5f6b"/>
+      <stop offset="1" stop-color="#3b3f4a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- housing -->
+  <rect x="20" y="16" width="520" height="428" rx="26" fill="url(#steel)"/>
+  <rect x="44" y="40" width="472" height="380" rx="14" fill="#101226"/>
+  <rect x="120" y="16" width="320" height="26" rx="8" fill="#a1261d"/>
+  <text x="280" y="34" text-anchor="middle" font-family="'Atkinson Hyperlegible',sans-serif" font-weight="700" font-size="15" fill="#fff" letter-spacing="3">SHIELD EYES FROM LINEAGE</text>
+
+  <!-- Y-shaped lineage: two sources + one derived column -->
+  <g filter="url(#fglow)" stroke="#4cc9f0" stroke-width="5" fill="none" opacity="0.95">
+    <path d="M132 120 L268 236"/>
+    <path d="M428 120 L292 236"/>
+    <path d="M280 250 L280 360"/>
+  </g>
+
+  <!-- source nodes -->
+  <g font-family="'Fira Code',monospace" font-size="17" text-anchor="middle">
+    <g filter="url(#fglow)">
+      <circle cx="124" cy="108" r="26" fill="#10132a" stroke="#4cc9f0" stroke-width="4"/>
+      <circle cx="436" cy="108" r="26" fill="#10132a" stroke="#4cc9f0" stroke-width="4"/>
+      <circle cx="280" cy="244" r="20" fill="#ffd23f" stroke="#f25c05" stroke-width="5"/>
+      <circle cx="280" cy="380" r="26" fill="#10132a" stroke="#3ae07e" stroke-width="4"/>
+    </g>
+    <text x="124" y="62" fill="#4cc9f0">silver.vehicles.mpg</text>
+    <text x="436" y="62" fill="#4cc9f0">silver.vehicles.cyl</text>
+    <text x="372" y="250" fill="#ffd23f">mean(mpg)</text>
+    <text x="280" y="428" fill="#3ae07e">gold.avg_mpg</text>
+  </g>
+</svg>

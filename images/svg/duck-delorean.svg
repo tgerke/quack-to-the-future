@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 280" role="img" aria-label="A rubber duck wearing sunglasses drives a DeLorean with its gullwing door open, leaving fire trails">
+  <defs>
+    <linearGradient id="flame" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f25c05" stop-opacity="0"/>
+      <stop offset="0.55" stop-color="#f25c05"/>
+      <stop offset="0.82" stop-color="#ffd23f"/>
+      <stop offset="1" stop-color="#fff6d6"/>
+    </linearGradient>
+    <linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eef1f7"/>
+      <stop offset="0.5" stop-color="#c3c9d8"/>
+      <stop offset="0.52" stop-color="#a6adc1"/>
+      <stop offset="1" stop-color="#878fa6"/>
+    </linearGradient>
+    <linearGradient id="duckbody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffd23f"/>
+      <stop offset="1" stop-color="#ff9f1c"/>
+    </linearGradient>
+    <clipPath id="doorway">
+      <path d="M 278 20 L 346 20 L 356 160 L 286 164 Z"/>
+    </clipPath>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ground shadow -->
+  <ellipse cx="358" cy="236" rx="220" ry="7" fill="#070912" opacity="0.55"/>
+
+  <!-- fire trails -->
+  <g filter="url(#glow)">
+    <path d="M 6 214 Q 90 210 188 212 L 188 222 Q 96 222 8 224 Z" fill="url(#flame)"/>
+    <path d="M 26 232 Q 120 228 210 230 L 210 238 Q 130 238 28 240 Z" fill="url(#flame)"/>
+  </g>
+
+  <!-- wheels (behind body so arches frame them) -->
+  <g>
+    <circle cx="220" cy="207" r="25" fill="#12142a"/>
+    <circle cx="220" cy="207" r="12" fill="#a6adc1"/>
+    <circle cx="220" cy="207" r="4" fill="#5a617a"/>
+    <circle cx="472" cy="207" r="25" fill="#12142a"/>
+    <circle cx="472" cy="207" r="12" fill="#a6adc1"/>
+    <circle cx="472" cy="207" r="4" fill="#5a617a"/>
+  </g>
+
+  <!-- underglow -->
+  <rect x="262" y="201" width="176" height="5" rx="2.5" fill="#4cc9f0" opacity="0.4" filter="url(#glow)"/>
+
+  <!-- Mr. Fusion -->
+  <g>
+    <rect x="166" y="104" width="20" height="26" rx="3" fill="#c3c9d8" stroke="#79819a" stroke-width="1.5"/>
+    <circle cx="176" cy="104" r="9" fill="#d9dee9" stroke="#79819a" stroke-width="1.5"/>
+    <rect x="171" y="112" width="10" height="8" rx="1.5" fill="#f25c05" opacity="0.85"/>
+  </g>
+
+  <!-- body -->
+  <path d="M 158 129 L 350 120 L 436 158 L 552 172 L 560 183 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 158 202 Z" fill="url(#chrome)"/>
+  <!-- black lower trim -->
+  <path d="M 158 191 L 560 196 L 560 197 L 504 202 A 32 32 0 0 0 440 202 L 252 202 A 32 32 0 0 0 188 202 L 158 202 Z" fill="#1a1d33"/>
+  <!-- beltline crease -->
+  <path d="M 160 167 L 186 168 M 254 172 L 438 182 M 508 185 L 556 188" stroke="#79819a" stroke-width="2" opacity="0.8" fill="none"/>
+  <!-- hood panel line -->
+  <path d="M 444 163 L 544 174" stroke="#79819a" stroke-width="1.5" opacity="0.6" fill="none"/>
+  <!-- rear louvers -->
+  <g stroke="#5a617a" stroke-width="2" opacity="0.9">
+    <path d="M 166 136 L 212 133"/>
+    <path d="M 166 143 L 214 140"/>
+    <path d="M 166 150 L 216 147"/>
+    <path d="M 166 157 L 218 154"/>
+  </g>
+  <!-- windshield -->
+  <path d="M 354 122 L 436 157 L 414 158 L 342 126 Z" fill="#12142a"/>
+  <!-- headlight -->
+  <circle cx="553" cy="178" r="4" fill="#fff6d6" opacity="0.9"/>
+
+  <!-- open doorway -->
+  <path d="M 280 124 L 346 121 L 356 160 L 286 164 Z" fill="#12142a"/>
+
+  <!-- duck -->
+  <g clip-path="url(#doorway)">
+    <ellipse cx="310" cy="136" rx="27" ry="24" fill="url(#duckbody)"/>
+    <circle cx="306" cy="96" r="21" fill="url(#duckbody)"/>
+  </g>
+  <path d="M 325 92 q 16 -2 21 6 q -6 9 -21 5 Z" fill="#f25c05"/>
+  <g>
+    <rect x="288" y="84" width="40" height="13" rx="6.5" fill="#12142a"/>
+    <path d="M 288 90 h -7" stroke="#12142a" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 294 89 h 26" stroke="#4cc9f0" stroke-width="2.5" opacity="0.8" stroke-linecap="round"/>
+  </g>
+
+  <!-- gullwing door, raised -->
+  <g>
+    <path d="M 342 121 L 384 32 L 406 37 L 364 123 Z" fill="url(#chrome)" stroke="#6d7590" stroke-width="1.5"/>
+    <path d="M 354 90 L 374 46 L 388 49 L 368 94 Z" fill="#12142a"/>
+  </g>
+</svg>
