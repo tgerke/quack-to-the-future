@@ -364,7 +364,7 @@ Chapter two: drive the time machine. Surviving Biff, reading history, and fixing
 ```{r}
 #| message: true
 butthead_cars <- get_ducklake_table("silver.vehicles") |>
-  filter(mpg >= 20) |>         # Biff hates the environment
+  filter(mpg >= 20) |>         # 20+ mpg? butthead cars
   select(model)
 
 with_transaction(
