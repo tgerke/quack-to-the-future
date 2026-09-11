@@ -222,6 +222,10 @@ One call opens a lake, and creates it first when nothing is at the path yet.
 That's a working data lake in a folder. Every write from here is transactional and versioned.
 :::
 
+```{=html}
+<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+```
+
 ::: notes
 This ran for real when the deck rendered. If you remember one code slide from this talk, make it this one. One call opens a lake, and creates it first if nothing is at that path, with Doc on record as the one who built it. The DuckLake extension downloads itself the first time you attach and tells you where it went, so there is no install step. That's a working data lake in a folder, and every write from here is transactional and versioned. By default the catalog is a DuckDB file next to the data, which is right for one person on one machine. A team lake keeps its catalog in SQLite or Postgres, and that is a one-argument change to this call.
 :::
@@ -265,6 +269,10 @@ with_transaction({
 Everything inside `with_transaction()` lands as one snapshot. If any step fails, nothing lands.
 :::
 
+```{=html}
+<img src="images/stills/marty.png" class="corner-headshot" alt="Marty McFly"/>
+```
+
 ::: notes
 This is the signature move in {ducklake}: the transaction wrapper is where who and why get recorded. Every write from here on has a name attached. Three schemas, one commit. Everything inside with_transaction() lands as one snapshot, and if any step fails, nothing lands. An R error partway through, a DuckLake error like a type that won't cast, or a conflicting commit from another writer: any of those rolls the whole transaction back, so a half-finished change never reaches the lake. Each layer gets its own schema, which keeps bronze, silver, and gold one lineage under three roofs, and lets you restrict access to the raw data at the schema level.
 :::
@@ -282,6 +290,10 @@ with_transaction(
 ::: {.fragment}
 Every commit carries an **author** and a **message**, and the confirmation names the snapshot.
 :::
+
+```{=html}
+<img src="images/stills/marty.png" class="corner-headshot" alt="Marty McFly"/>
+```
 
 ::: notes
 The raw data is mtcars, and it lands in bronze as received, one commit. Every commit carries an author and a message, and the confirmation names the snapshot. That snapshot number is the version number we'll travel to later. Snapshot 0 is the lake's creation.
@@ -311,9 +323,13 @@ with_transaction(create_table(gold, "gold.efficiency_by_cyl"),
 ```
 :::
 
-::: {.fragment}
+::: {.fragment .beside-headshot}
 `get_ducklake_table()` returns a **lazy table**. `create_table()` runs the query inside DuckDB and writes the result into the lake: the rows never pass through R.
 :::
+
+```{=html}
+<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+```
 
 ::: notes
 No new verbs to learn: select, mutate, group_by, summarise. The only additions are the bookends: get a table, create a table, wrapped in a documented transaction. get_ducklake_table() gives you a lazy table, and create_table() runs the query inside DuckDB and writes the result into the lake, so the rows never pass through R. I keep each recipe in a variable on purpose, because the recipe that builds a layer is also its lineage, and in chapter three we draw the diagram from these two objects.
@@ -425,11 +441,15 @@ list_table_snapshots("silver.vehicles") |> select(snapshot_id, author, commit_me
 ```
 :::
 
-::: {.fragment}
+::: {.fragment .beside-headshot}
 Snapshot 3 never went anywhere. Restore rolls **forward** as a *new* snapshot: Biff's mistake stays in the log.
 
 You fix the timeline **without erasing anyone from the photo**.
 :::
+
+```{=html}
+<img src="images/stills/doc.png" class="corner-headshot" alt="Doc Brown"/>
+```
 
 ::: notes
 Any table can be read exactly as it was at any snapshot, or at any timestamp with get_ducklake_table_asof(). Snapshot 3 never went anywhere: 32 rows. Restore rolls forward as a new snapshot, so Biff's mistake stays in the log. In the flat-file world the fix is overwriting the overwrite and praying. Here, history is append-only, and even the recovery is auditable. You fix the timeline without erasing anyone from the photo.

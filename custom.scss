@@ -203,15 +203,17 @@ $code-block-border-color: #262b47;
   .corner-headshot {
     position: absolute;
     right: 40px;
-    bottom: 56px;
-    width: 150px;
-    height: 150px;
+    bottom: 40px;
+    width: 140px;
+    height: 140px;
     margin: 0;
     border-radius: 50%;
     object-fit: cover;
     border: 3px solid $silver;
     box-shadow: 0 10px 30px rgba(0,0,0,.6);
   }
+  // Closing text on slides whose corner would otherwise be covered wraps short of it.
+  .beside-headshot { padding-right: 200px; }
 
   // ---- Misc ------------------------------------------------------------------------
   .caption-credit { font-size: .4em; color: #565b78; }
