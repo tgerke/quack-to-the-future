@@ -13,10 +13,10 @@ Slides for my talk at posit::conf(2026) in Houston:
 
 ## Rendering the slides
 
-The code chunks execute for real at render time (the demo lake in `data/` is rebuilt on each render), so both packages need to be installed. ducklake is on CRAN, but the slides show the one-line commit confirmations that only the development version prints, so install that one:
+The code chunks execute for real at render time (the demo lake in `data/` is rebuilt on each render), so both packages need to be installed. The slides need ducklake 0.8.0 or later: the one-line commit confirmations and the author on the lake's creation snapshot both arrived in that release, which is ahead of the CRAN version, so install it from GitHub:
 
 ```r
-pak::pak("tgerke/ducklake-r")
+pak::pak("tgerke/ducklake-r@v0.8.0")
 pak::pak("tgerke/dplyneage")
 ```
 
