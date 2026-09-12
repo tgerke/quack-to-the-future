@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "slides",
-      "runtimeExecutable": "quarto",
-      "runtimeArgs": ["preview", "index.qmd", "--no-browser", "--no-watch-inputs", "--port", "8123"],
-      "port": 8123
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "4321"],
+      "port": 4321
     }
   ]
 }

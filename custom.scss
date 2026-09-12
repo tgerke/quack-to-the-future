@@ -32,7 +32,9 @@ $code-block-border-color: #262b47;
 /*-- scss:rules --*/
 
 .reveal {
-  .slide-number { color: rgba(#c0c5ce, .45); font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: 700; }
+  // quarto-support/footer.css loads after the theme and re-pins .slide-number
+  // to 12px at equal specificity; the div qualifier is what makes this stick.
+  div.slide-number { color: rgba(#c0c5ce, .45); font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: 700; }
 
   h2 {
     letter-spacing: .01em;
