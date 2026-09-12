@@ -408,8 +408,8 @@ Every team has a Biff. Sometimes Biff is you, at 4:47 PM. Biff wants a table of 
 ```{r}
 get_table_changes("silver.vehicles", start = 5, end = 5) |>   # snapshot 5: Biff's commit
   select(change_type, model, mpg) |>
-  head(3) |>
-  collect()
+  collect() |>
+  print(n = 10)
 ```
 
 ```{r}
