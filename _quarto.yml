@@ -3,5 +3,8 @@ project:
   render:
     - index.qmd
 
+# Browser tab title. A title: key would also add a reveal title slide.
+pagetitle: "Quack to the Future: Building Traceable Data Lakehouses with DuckLake in R"
+
 execute:
   freeze: auto
